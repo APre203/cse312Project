@@ -28,9 +28,11 @@
                  -->
             </div>
         </div>
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <!-- Sidebar content (comments, chat, etc.) goes here -->
             sidebar
+            <div id="chat-messages"></div>
+
             <!-- 
                 Users would be able to interact with each other by typing
                 Might not need this who knows
@@ -45,5 +47,28 @@
             </div>
         </div>
     </div>
+    <script>
+        function sendChat() {
+            var messageInput = document.getElementById('chat-text-box');
+            var message = messageInput.value.trim();
+            if (message !== '') {
+                addChatMessage(message);
+                messageInput.value = ''; // Clear the input box after sending
+            }
+        }
+
+        function addChatMessage(message) {
+            var sidebar = document.getElementById('sidebar');
+            var chatMessages = document.getElementById('chat-messages');
+            var username = 'User'; // You can retrieve username dynamically if you have user authentication
+
+            var messageElement = document.createElement('div');
+            messageElement.textContent = username + ': ' + message;
+
+            chatMessages.insertBefore(messageElement, chatMessages.firstChild);
+            sidebar.scrollTop = 0; // Scroll to top to show the latest message
+        }
+    </script>
 </body>
 </html>
+
