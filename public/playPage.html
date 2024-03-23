@@ -1,49 +1,78 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Play Page</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
+    <link rel="stylesheet" href="/static/css/styles.css" />
+    <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
     <div class="container">
-        <div class="game-area">
-            <!-- Your game boundary goes here -->
-            game area
-            <!--
-                What needs to be added: 
+      <div class="game-area">
+        <!-- Your game boundary goes here -->
+        game area
+        <!--
+                What needs to be added:
                     1. Background
                     2. Mouse detection
                     3. Ball making
                     4. Actual player character (the character will be named as the username OR guest)
-            
+
             -->
-            <div class="leaderboard">
-                <!-- Leaderboard content goes here -->
-                leaderboard
-                <!-- 
+        <div class="leaderboard">
+          <!-- Leaderboard content goes here -->
+          leaderboard
+          <!--
                     This will be dynamically created and changed no need to do anything here
 
                  -->
-            </div>
         </div>
-        <div class="sidebar">
-            <!-- Sidebar content (comments, chat, etc.) goes here -->
-            sidebar
-            <!-- 
+      </div>
+      <div class="sidebar" id="sidebar">
+        <!-- Sidebar content (comments, chat, etc.) goes here -->
+        sidebar
+        <div id="chat-messages"></div>
+
+        <!--
                 Users would be able to interact with each other by typing
                 Might not need this who knows
              -->
-            <div class="chat-form">
-                <hr>
-                <label>
-                    Chat:
-                    <input id="chat-text-box" type="text">
-                </label>
-                <button id="chat-button" onclick="sendChat()">Send</button>
-            </div>
+        <div class="chat-form">
+          <hr />
+          <label>
+            Chat:
+            <input id="chat-text-box" type="text" />
+          </label>
+          <button type="submit" id="chat-button">Send</button>
         </div>
+        <script>
+          $(document).ready(function () {
+            // creates the socket object
+            const socket = io();
+            const username = "Guest";
+            $("#chat-button").on("click", () => {
+              // this gets sent on the message event to the backend, which I can emit to everyone in the room using an emit/broadcast or send/broadcast
+              socket.send(`${username}: ${$("#chat-text-box").val()}`);
+              $("#chat-text-box").val("");
+            });
+            socket.on("message", (msg) => {
+              console.log(msg);
+              $("#chat-messages").append($("<p>").text(msg));
+            });
+          });
+        </script>
+      </div>
     </div>
-</body>
+    <body />
+    <html />
+  </body>
 </html>
