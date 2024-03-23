@@ -1,5 +1,6 @@
 pymongo
 flask
+flask_socketio
 # json
 # html
 # re
