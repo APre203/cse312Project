@@ -1,0 +1,21 @@
+version: "3.9"  # Specify docker-compose version
+
+services:
+  # Flask application service
+  app:
+    build: .  # Build the image from the current directory (./Dockerfile)
+    ports:
+      - "8080:8080"  # Map container port 5000 to host port 5000
+    depends_on:
+      - mongo  # Wait for MongoDB to be ready before starting the app
+
+  # MongoDB service
+  mongo:
+    image: mongo:4.2.5  # Use the official mongo image
+    ports:
+      - "27017:27017"  # Map container port 27017 to host port 27017 (MongoDB default)
+
+
+# Define a volume for MongoDB data
+volumes:
+  mongo-data:

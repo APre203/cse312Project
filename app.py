@@ -1,15 +1,14 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response
 from pymongo import MongoClient
 import hashlib
 import secrets
+import datetime
 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# This will obviously need to be changed to use a database
-
-client = MongoClient('mongodb://localhost:27017/')
+client = MongoClient('mongodb://cse312project-mongo-1:27017/')
 db = client['your_database_name']
 users_collection = db['users']
 tokens_collection = db['tokens']
@@ -26,7 +25,6 @@ def hash_token(token):
     return hashed_token
 
 def generate_token():
-    # Generate a random 32-byte token
     return secrets.token_hex(32)
 
 @app.route('/')
@@ -49,18 +47,12 @@ def login_or_create():
     if action == 'login':
         user = users_collection.find_one({'username': username})
         if user:
-            # Get salt from the user document
             salt = user['salt']
-            # Hash the provided password with the retrieved salt
             hashed_password = hash_password(password, salt)
-            # Check if the hashed password matches the one stored in the database
             if hashed_password == user['password']:
                 token = generate_token()
-                # Hash the token
                 hashed_token = hash_token(token)
-                # Store the hashed token in the database
                 tokens_collection.insert_one({'username': username, 'token': hashed_token})
-                # Set the token as a cookie with HttpOnly directive and expiration time
                 response = make_response(redirect(url_for('dashboard')))
                 response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
                 return response
@@ -91,5 +83,13 @@ def play_as_guest():
 def dashboard():
     return render_template('game.html')
 
-if __name__ == '__main__':
-    app.run(debug=True)
+def main():
+    host = "0.0.0.0"
+    port = 8080
+
+    print("Listening on port " + str(port))
+
+    app.run(host=host, port=port)
+
+if __name__ == "__main__":
+    main()
