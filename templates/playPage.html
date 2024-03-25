@@ -27,6 +27,9 @@
                     4. Actual player character (the character will be named as the username OR guest)
             
             -->
+            <form action="{{ url_for('logout') }}" method="post">
+                <button type="submit" class="btn btn-danger">Logout</button>
+            </form>
             <div class="leaderboard">
                 <!-- Leaderboard content goes here -->
                 leaderboard

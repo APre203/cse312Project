@@ -3,6 +3,7 @@ from flask_socketio import SocketIO, emit, send
 import datetime
 from util.auth import *
 from util.db import *
+import html
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -18,6 +19,7 @@ def add_header(response):
 def handle_message(username, message):
     if message != 'User Connected!':
         message = message.split(": ")[1]
+        message = html.escape(message)
         storeMessage(username, message)
         send(message, broadcast=True)
 
@@ -104,6 +106,13 @@ def dashboard():
         cookie_value = request.cookies.get('auth_token')
         username = find_user(cookie_value)
     return render_template('playPage.html', name=username)
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    response = make_response(redirect(url_for('index')))
+    response.set_cookie('auth_token', '', expires=0)  # Remove the auth_token cookie
+    return response
+
 @app.route('/api/chat',  methods=['GET', 'POST'])
 def add_chat_message():
     username = "Guest"
