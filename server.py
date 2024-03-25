@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, send_file, request, jsonify
 #from pymongo import MongoClient
-from db import savechattod
+from util.auth import savechattod
 app = Flask(__name__)
 
 # client = MongoClient("mongodb+srv://test:test@312chat1.5f8u0gy.mongodb.net/")
