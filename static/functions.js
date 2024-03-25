@@ -31,43 +31,31 @@ function sendChat() {
     }
 }
 
-// function addChatMessage(messageJSON) {
-//     console.log("Here1")
-//     var sidebar = document.getElementById('sidebar');
-//     var chatMessages = document.getElementById('chat-messages');
-//     // You can retrieve username dynamically if you have user authentication
-//     //savechattod(username,message, "test")
-    
-//     var messageElement = document.createElement('div');
-//     messageElement.textContent = messageJSON.username + ': ' + messageJSON.message;
 
-//     chatMessages.insertBefore(messageElement, chatMessages.firstChild);
-//     sidebar.scrollTop = 0; // Scroll to top to show the latest message
-
-// }
-
-function addChatMessage(messageJSON){
-    // console.log("AddChat", messageJSON)
+function addChatMessage(messageJSON) {
     var sidebar = document.getElementById('sidebar');
     var chatMessages = document.getElementById('chat-messages');
     var messageElement = document.createElement('div');
     var messageText = document.createElement('span');
-    
-    var likeButton = document.createElement('button');
 
-    messageText.textContent = messageJSON.username + ': ' + messageJSON.message;
+    var likeButton = document.createElement('button');
+    likeButton.className = 'like-button';
+    likeButton.innerHTML = '<i class="fas fa-thumbs-up"></i><span class="like-count">0</span>';
     
-    likeButton.textContent = 'Like';
+    messageText.textContent = messageJSON.username + ': ' + messageJSON.message;
+
     likeButton.addEventListener('click', function() {
         // Handle like button click event
-        console.log('Like button clicked for message:', messageJSON.message);
+        // Increment like count
+        var likeCountSpan = this.querySelector('.like-count');
+        var currentCount = parseInt(likeCountSpan.textContent);
+        likeCountSpan.textContent = currentCount + 1;
     });
 
     messageElement.appendChild(messageText);
     messageElement.appendChild(likeButton);
     chatMessages.insertBefore(messageElement, chatMessages.firstChild);
     sidebar.scrollTop = 0; // Scroll to top to show the latest message
-
 }
 
 function clearChat() {
@@ -101,5 +89,49 @@ function updateChat(){
     });
 
 }
+
+function likeButton() {
+
+    fetch('/chat/api', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Content-Type-Options': 'nosniff'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            response.json().then(data => {
+                // console.log("data",data)
+                addChatMessage(data);
+                messageInput.value = ''; // Clear the input box after sending
+            })
+        } else {
+            throw new Error('Failed to send chat message');
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        // Handle error
+    });
+
+    const likeButton = document.getElementById('like-button');
+    const likeCountElement = document.getElementById('like-count');
+    let likeCount = parseInt(likeCountElement.innerText);
+
+    if (likeButton.classList.contains('liked')) {
+        // If already liked, unlike it
+        likeCount--;
+        likeButton.classList.remove('liked');
+    } else {
+        // If not liked, like it
+        likeCount++;
+        likeButton.classList.add('liked');
+    }
+
+    likeCountElement.innerText = likeCount;
+}
+
 
 setInterval(updateChat, 5000);

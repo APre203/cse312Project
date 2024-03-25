@@ -54,3 +54,8 @@ body, html {
     background-color: red;
     border-radius: 50%;
   }
+
+  .liked {
+    background-color: blue; /* Adjust the background color when liked */
+    color: white; /* Adjust the text color when liked */
+}

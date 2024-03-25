@@ -70,7 +70,6 @@ def add_chat_message():
         # GET TOTAL FROM DATABASE
         return jsonify(getallmessages())#[{"username": "test", "message": "something","id":1},{"username": "test2", "message": "something2","id":2}]), 200
     data = request.json
-    print("data:",data)
     username = "Guest"
     auth = False
     if auth:
@@ -82,11 +81,25 @@ def add_chat_message():
     if message:
         savechattod(username, message)
         #chat_collection.insert_one({'username': username, 'message': message})
-        return jsonify({"username": username, "message": message,"id":1}), 201
+        return jsonify({"username": username, "message": message,"id":1}), 201 # CHANGE ID TO ACTUAL ID OF MESSAGE
     else:
         return jsonify({'error': 'Username and message are required'}), 400
 
-# NOW WE HAVE TO SEND ALL MESSAGES FROM MONGO WHEN WE RECEIVE THEM
+@app.route('/chat/like/<id>')
+def add_user_like(id=None):
+    # LOOK AT COOKIE IN REQUEST
+    # SEE IF ITS AUTHORIZED
+    # THEN ADD IT TO THE MESSAGE LIKED LIST
+    
+    # GET user_id FROM AUTH
+    user_id = None
+    # GET message_id FROM NETWORK
+    message_id = None
+
+    addUserLike(message_id,user_id)
+
+    return
+
 
 def main():
     host = "0.0.0.0"

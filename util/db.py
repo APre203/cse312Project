@@ -14,3 +14,7 @@ def getallmessages():
     for record in chat_collection.find():
         retval.append({"username":record["username"], "message":record["message"]})
     return retval
+
+def addUserLike(message_id, user_id):
+    # ADD THE USER TO THE LIKE
+    return
