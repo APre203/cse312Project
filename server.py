@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response, send_from_directory
+from flask_socketio import SocketIO, emit, send
+from db import storeMessage
 import datetime
 from util.auth import *
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 
 @app.after_request
