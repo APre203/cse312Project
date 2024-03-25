@@ -8,7 +8,7 @@ function sendChat() {
         // console.log("Message: ", message)
         // var username = 'User'; // You can retrieve username dynamically if you have user authentication
         var data = { "message":message };
-        fetch('/chat/api', {
+        fetch('/api/chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -45,10 +45,40 @@ function addChatMessage(messageJSON){
 
     messageText.textContent = messageJSON.username + ': ' + messageJSON.message;
     
-    likeButton.textContent = 'Like';
+
+    // console.log("Count",messageJSON.count)
+    likeButton.textContent = 'Like' + ": " + messageJSON.count;
+    likeButton.style.backgroundColor = messageJSON.color;
+    likeButton.style.border = '1px solid black';
+
     likeButton.addEventListener('click', function() {
+        var data = { "id":messageJSON.id };
+        fetch('/api/like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Content-Type-Options': 'nosniff'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (response.ok) {
+                response.json().then(data => {
+                    // console.log("Like Data",data)
+                    likeButton.style.backgroundColor = data.color;
+                    likeButton.textContent = 'Like' + ": " + data.count;
+                })
+            } else {
+                throw new Error('Failed to send chat message');
+            }
+        })
+        .catch(error => {
+            console.error(error);
+            // Handle error
+        });
         // Handle like button click event
-        console.log('Like button clicked for message:', messageJSON.message);
+        // console.log('Like button clicked for message:',messageJSON.message);
+        // console.log('id:',messageJSON.id)
     });
 
     messageElement.appendChild(messageText);
@@ -64,7 +94,7 @@ function clearChat() {
 }
 
 function updateChat(){
-    fetch("/chat/api")
+    fetch("/api/chat")
     .then(response => {
         // console.log(response)
         if (response.ok) {

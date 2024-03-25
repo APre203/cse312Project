@@ -23,3 +23,8 @@ def hash_token(token):
 
 def generate_token():
     return secrets.token_hex(32)
+
+def find_user(token):
+    hashed_input_token = hashlib.sha256(token.encode()).hexdigest()
+    result = tokens_collection.find_one({"token":hashed_input_token})
+    return result["username"]

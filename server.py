@@ -1,8 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
 from flask_socketio import SocketIO, emit, send
-from db import storeMessage
 import datetime
 from util.auth import *
+from util.db import *
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -99,28 +99,49 @@ def play_as_guest():
 
 @app.route('/game')
 def dashboard():
-    return render_template('playPage.html')
-@app.route('/chat/api',  methods=['GET', 'POST'])
+    username = None
+    if "auth_token" in request.cookies:
+        cookie_value = request.cookies.get('auth_token')
+        username = find_user(cookie_value)
+    return render_template('playPage.html', name=username)
+@app.route('/api/chat',  methods=['GET', 'POST'])
 def add_chat_message():
+    username = "Guest"
+    if "auth_token" in request.cookies:
+        cookie_value = request.cookies.get('auth_token')
+        username = find_user(cookie_value)
     if request.method == "GET":
         # GET TOTAL FROM DATABASE
-        return jsonify(getallmessages())#[{"username": "test", "message": "something","id":1},{"username": "test2", "message": "something2","id":2}]), 200
+        return jsonify(getallmessages(username))#[{"username": "test", "message": "something","id":1},{"username": "test2", "message": "something2","id":2}]), 200
     data = request.json
-    print("data:",data)
-    username = "Guest"
-    auth = False
-    if auth:
-        username = "new_username"
+    # print("data:",data)
 
     message = data.get('message')
   #  print(message)
     
     if message:
-        savechattod(username, message)
+        id = storeMessage(username, message)
         #chat_collection.insert_one({'username': username, 'message': message})
-        return jsonify({"username": username, "message": message,"id":1}), 201
+        return jsonify({"username": username, "message": message,"id":id, "count":0}), 201
     else:
         return jsonify({'error': 'Username and message are required'}), 400
+    
+@app.route('/api/like', methods=['POST'])
+def add_like_data():
+    if "auth_token" in request.cookies:
+        cookie_value = request.cookies.get('auth_token')
+        data = request.json
+        id = data["id"]
+
+        username = find_user(cookie_value)
+        message = getSingleMessage(id)
+        notLiked = True
+        if username in  message["likes"]:
+            notLiked = False
+        color, count = updateLikeCount(id, username, notLiked)
+        return jsonify({"color": color, "count":count}), 201
+    else:
+        abort(403)
 def main():
     host = "0.0.0.0"
     port = 8080
