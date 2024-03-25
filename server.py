@@ -12,6 +12,21 @@ def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
+@socketio.on("message")
+def handle_message(username, message):
+    if message != 'User Connected!':
+        message = message.split(": ")[1]
+        storeMessage(username, message)
+        send(message, broadcast=True)
+
+@socketio.on('connect')
+def test_connect():
+    print("User Connected!")
+
+@socketio.on("disconnect")
+def test_disconnect():
+    print("User Disconnected")
+    
 @app.route('/')
 def index():
     return render_template('login.html')
