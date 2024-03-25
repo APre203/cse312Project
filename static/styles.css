@@ -39,9 +39,9 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 50px;
   text-align: center;
-  margin-top: 100px; 
+  margin-top: 20px; 
   margin-bottom: 200px; 
-  height: 400px;
+  height: auto;
 }
 
 h1 {
@@ -87,4 +87,16 @@ button:hover {
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 4px;
+}
+
+.centered-form {
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center aligns the content horizontally */
+  align-items: center; /* Center aligns the content vertically */
+}
+
+.centered-image {
+  margin-left: 10px; /* Add some spacing between the button and the image */
+  height: 50px;
+  width: 50px;
 }

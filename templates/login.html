@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
   <title>Login</title>
 </head>
-<body>
+<body onload="welcome();">
   <h1 class="title">GAME NAME</h1>
 
   <div class="container">
@@ -19,8 +20,8 @@
         </ul>
       {% endif %}
     {% endwith %}
-
-    <h2 class="login">LOGIN</h2>
+    <!-- <p id="paragraph">  </p> -->
+    <h2 class="login" id="login"></h2>
 
     <form method="post" action="{{ url_for('login_or_create') }}">
       <label for="username">Username:</label>
@@ -35,10 +36,12 @@
       <button type="submit" name="action" value="login">Login</button>
       <button type="submit" name="action" value="create_account">Create Account</button>
     </form>
-    <form method="post" action="{{ url_for('play_as_guest') }}">
+    <form method="post" action="{{ url_for('play_as_guest') }}" class="centered-form">
       <button type="submit">Play as Guest</button>
+      <img src="{{ url_for('static', filename='no_meme.jpeg') }}" alt="Guest Image" class="centered-image">
     </form>
         
   </div>
+  <script src="{{ url_for('static', filename='functions.js') }}"></script>
 </body>
 </html>

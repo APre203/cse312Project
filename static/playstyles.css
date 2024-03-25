@@ -1,0 +1,50 @@
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex; 
+    height: 100vh; 
+}
+
+.game-area {
+    flex: 1; 
+    position: relative; 
+    background-color: #f0f0f0; 
+    border: 2px solid #ccc; 
+}
+
+.leaderboard {
+    position: absolute; 
+    top: 20px; 
+    right: 20px; 
+    width: 200px; 
+    background-color: #fff; 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    opacity: 75%;
+    
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    background-color: #fff; 
+    border-left: 2px solid #ccc; 
+}
+
+.chat-form {
+    margin-top: auto; 
+    padding: 10px; 
+    border-top: 1px solid #ccc; 
+}
+
+#player {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background-color: red;
+    border-radius: 50%;
+  }

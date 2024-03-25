@@ -1,35 +1,30 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response
-from pymongo import MongoClient
-import hashlib
-import secrets
+from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response, send_from_directory
 import datetime
-
+from util.auth import *
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-client = MongoClient('mongodb://cse312project-mongo-1:27017/')
-db = client['your_database_name']
-users_collection = db['users']
-tokens_collection = db['tokens']
 
-def hash_password(password, salt):
-    hashed_password = hashlib.sha256((password + salt).encode()).hexdigest()
-    return hashed_password
 
-def generate_salt():
-    return secrets.token_hex(16)
-
-def hash_token(token):
-    hashed_token = hashlib.sha256(token.encode()).hexdigest()
-    return hashed_token
-
-def generate_token():
-    return secrets.token_hex(32)
+@app.after_request
+def add_header(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    return response
 
 @app.route('/')
 def index():
     return render_template('login.html')
+
+@app.route('/playstyles.css')
+def playstyle():
+    return send_from_directory('static', 'playstyles.css')
+
+
+@app.route('/styles.css')
+def style():
+    return send_from_directory('static', 'styles.css')
+
 
 @app.route('/login_or_create', methods=['POST'])
 def login_or_create():
@@ -52,6 +47,7 @@ def login_or_create():
             if hashed_password == user['password']:
                 token = generate_token()
                 hashed_token = hash_token(token)
+                tokens_collection.delete_one({'username': username})
                 tokens_collection.insert_one({'username': username, 'token': hashed_token})
                 response = make_response(redirect(url_for('dashboard')))
                 response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
@@ -66,10 +62,15 @@ def login_or_create():
         
         user = users_collection.find_one({'username': username})
         if not user:
+            token = generate_token()
+            hashed_token = hash_token(token)
+            tokens_collection.insert_one({'username': username, 'token': hashed_token})
             salt = generate_salt()
             hashed_password = hash_password(password, salt)
             users_collection.insert_one({'username': username, 'password': hashed_password, 'salt': salt})
-            return redirect(url_for('dashboard'))
+            response = make_response(redirect(url_for('dashboard')))
+            response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
+            return response
         else:
             flash('Username already taken. Please choose another username.', 'danger')
             return redirect(url_for('index'))
@@ -81,7 +82,7 @@ def play_as_guest():
 
 @app.route('/game')
 def dashboard():
-    return render_template('game.html')
+    return render_template('playPage.html')
 
 def main():
     host = "0.0.0.0"
