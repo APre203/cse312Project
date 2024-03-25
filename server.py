@@ -98,7 +98,27 @@ def play_as_guest():
 @app.route('/game')
 def dashboard():
     return render_template('playPage.html')
+@app.route('/chat/api',  methods=['GET', 'POST'])
+def add_chat_message():
+    if request.method == "GET":
+        # GET TOTAL FROM DATABASE
+        return jsonify(getallmessages())#[{"username": "test", "message": "something","id":1},{"username": "test2", "message": "something2","id":2}]), 200
+    data = request.json
+    print("data:",data)
+    username = "Guest"
+    auth = False
+    if auth:
+        username = "new_username"
 
+    message = data.get('message')
+  #  print(message)
+    
+    if message:
+        savechattod(username, message)
+        #chat_collection.insert_one({'username': username, 'message': message})
+        return jsonify({"username": username, "message": message,"id":1}), 201
+    else:
+        return jsonify({'error': 'Username and message are required'}), 400
 def main():
     host = "0.0.0.0"
     port = 8080
