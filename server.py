@@ -1,6 +1,6 @@
 from flask import Flask, send_from_directory, send_file, request, jsonify
 #from pymongo import MongoClient
-from util.auth import savechattod
+from util.auth import *
 app = Flask(__name__)
 
 # client = MongoClient("mongodb+srv://test:test@312chat1.5f8u0gy.mongodb.net/")
@@ -34,11 +34,16 @@ def add_chat_message():
     if message:
         savechattod(username, message)
         #chat_collection.insert_one({'username': username, 'message': message})
-        return jsonify({"username": username, "message": message,"id":1}), 201
+        return jsonify({"username": username, "message": message, "likes":"0","id":1}), 201
     else:
         return jsonify({'error': 'Username and message are required'}), 400
 
-
+@app.route('/chat/getlikes')
+def getlikes():
+    data=request.json
+    return jsonify(inclikes(data.get('message')))
+    
+    
 @app.route('/styles.css')
 def style():
     return send_from_directory('public', 'styles.css')

@@ -6,7 +6,7 @@
     <title>Play Page</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body onload="updateChat()">
     <div class="container">
         <div class="game-area">
             <!-- Your game boundary goes here -->
@@ -47,48 +47,8 @@
             </div>
         </div>
     </div>
-    <script>
-        function sendChat() {
-            var messageInput = document.getElementById('chat-text-box');
-            var message = messageInput.value.trim();
-            if (message !== '') {
-                var username = 'User'; // You can retrieve username dynamically if you have user authentication
-                var data = { username, message };
-                fetch('/chat/api', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Content-Type-Options': 'nosniff'
-                    },
-                    body: JSON.stringify(data)
-                })
-                .then(response => {
-                    if (response.ok) {
-                        addChatMessage(message);
-                        messageInput.value = ''; // Clear the input box after sending
-                    } else {
-                        throw new Error('Failed to send chat message');
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    // Handle error
-                });
-            }
-        }
-
-        function addChatMessage(message) {
-            var sidebar = document.getElementById('sidebar');
-            var chatMessages = document.getElementById('chat-messages');
-            var username = 'User'; // You can retrieve username dynamically if you have user authentication
-            //savechattod(username,message, "test")
-            var messageElement = document.createElement('div');
-            messageElement.textContent = username + ': ' + message;
-
-            chatMessages.insertBefore(messageElement, chatMessages.firstChild);
-            sidebar.scrollTop = 0; // Scroll to top to show the latest message
-        }
-    </script>
+    <script src="/static/player.js"></script>
+    <script src="/static/functions.js"></script>
+    
 </body>
 </html>
-

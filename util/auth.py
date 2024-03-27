@@ -15,12 +15,19 @@ client = MongoClient("mongo")
 db = client['cse312project']
 chat_collection = db['chat-history']
 def savechattod(username, message):
-    chat_collection.insert_one({'username': username, 'message': message})
+    chat_collection.insert_one({'username': username, 'message': message, 'likes':"0"})
     
     
     
 def getallmessages():
     retval = []
     for record in chat_collection.find():
-        retval.append({"username":record["username"], "message":record["message"]})
+        retval.append({"username":record["username"], "message":record["message"],"likes":record["likes"]})
     return retval
+
+def inclikes(msg):
+    for i in chat_collection.find():
+        if i["message"]==msg:
+            i["likes"]=str(int(i["likes"])+1)
+            print(i)
+    return 1
