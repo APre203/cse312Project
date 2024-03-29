@@ -26,8 +26,18 @@ def getallmessages():
     return retval
 
 def inclikes(msg):
-    for i in chat_collection.find():
-        if i["message"]==msg:
-            i["likes"]=str(int(i["likes"])+1)
-            print(i)
-    return 1
+    #for i in chat_collection.find():
+        # if i["message"]==msg:
+            # chat_collection.update_one({"message":msg}, {"$addToSet": {"likes": username},  # Add the username to the likes array
+            # "$inc": {"likes": 1}})
+            # print(i)
+            # return "1"
+        
+        chat_collection.update_one(
+        {"message": msg},
+        {
+            "$addToSet": {"likes": username},
+            "$inc": {"likes": 1}
+        }
+        )
+        return "1" 

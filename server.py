@@ -38,11 +38,11 @@ def add_chat_message():
     else:
         return jsonify({'error': 'Username and message are required'}), 400
 
-@app.route('/chat/getlikes')
+@app.route('/chat/getlikes', methods=['POST'])
 def getlikes():
     data=request.json
-    return jsonify(inclikes(data.get('message')))
-    
+    inclikes(data.get('message'))
+    return jsonify({'status': 'success'})
     
 @app.route('/styles.css')
 def style():

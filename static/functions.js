@@ -46,7 +46,12 @@ function addChatMessage(messageJSON,dat){
     likeButton.addEventListener('click', function() {
         // Handle like button click event
         fetch("/chat/getlikes",{
-            body: JSON.stringify(dat)
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Content-Type-Options': 'nosniff'
+            },
+            body: JSON.stringify(messageJSON)
         })
     .then(response => {
         // console.log(response)
