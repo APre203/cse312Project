@@ -3,14 +3,13 @@ from flask_socketio import SocketIO, emit, send, join_room, leave_room
 import datetime
 from util.auth import *
 from util.db import *
+import html
 from flask_sock import Sock
 import time
 import json
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-# sock = Sock(app)
-# socketio = SocketIO(app)
 
 sock = Sock(app)
 
@@ -37,34 +36,19 @@ def test_ws(socket):
             # recieved_data = json.loads(raw_data)
             print("DATA", json.loads(raw_data))
             
+            print("Here")
         except:
             pass
         
         time.sleep(5)
 
-def handle_connect():
-    # Assign a unique identifier to the player
-    player_id = request.sid
-    join_room(player_id)
-    emit('player_connected', {'player_id': player_id}, room=player_id)
 
-# @socketio.on('disconnect')
-# def handle_disconnect():
-#     player_id = request.sid
-#     leave_room(player_id)
-#     emit('player_disconnected', {'player_id': player_id}, room=player_id)
 
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
-
-# @sock.route("/gamews")
-# def request_game_websocket(ws):
-#     print(ws)
-#     return
-    
-
+ 
 @app.route('/')
 def index():
     return render_template('login.html')
@@ -140,6 +124,13 @@ def play_as_guest():
 def dashboard():
     username = getUsername(request)
     return render_template('playPage.html', name=username)
+
+
+@app.route('/logout', methods=['POST'])
+def logout():
+    response = make_response(redirect(url_for('index')))
+    response.set_cookie('auth_token', '', expires=0)  # Remove the auth_token cookie
+    return response
 
 @app.route('/api/chat',  methods=['GET', 'POST'])
 def add_chat_message():
