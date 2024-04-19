@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="stylesheet" href="{{ url_for('static', filename='playstyles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
     <title>Play Page</title>
 </head>
 <body onload="updateChat()">
@@ -54,8 +56,9 @@
             </div>
         </div>
     </div>
+    <script src="{{ url_for('static', filename='playfunction.js') }}"></script>
+    <script src="{{ url_for('static', filename='websocketclient.js') }}"></script>
     <script src="/static/player.js"></script>
-    <script src="/static/functions.js"></script>
     
 </body>
 </html>

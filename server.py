@@ -1,34 +1,70 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
-from flask_socketio import SocketIO, emit, send
+from flask_socketio import SocketIO, emit, send, join_room, leave_room
 import datetime
 from util.auth import *
 from util.db import *
+from flask_sock import Sock
+import time
+import json
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-socketio = SocketIO(app, cors_allowed_origins="*")
+# sock = Sock(app)
+# socketio = SocketIO(app)
 
+sock = Sock(app)
+
+def getUsername(request):
+    username = "Guest"
+    if "auth_token" in request.cookies:
+        cookie_value = request.cookies.get('auth_token')
+        username = find_user(cookie_value)
+    return username
+
+@sock.route('/gamews')
+def test_ws(socket):
+    print("I AM CONNECTED")
+    print(socket)
+    username = getUsername(request)
+    while True:
+        raw_data = socket.receive(timeout=0)
+        try:
+            data_to_send = {"Username":username, "message":"server message"}
+            send_data = json.dumps(data_to_send)
+            socket.send(send_data)
+
+            print("RAW DATA: ", raw_data)
+            # recieved_data = json.loads(raw_data)
+            print("DATA", json.loads(raw_data))
+            
+        except:
+            pass
+        
+        time.sleep(5)
+
+def handle_connect():
+    # Assign a unique identifier to the player
+    player_id = request.sid
+    join_room(player_id)
+    emit('player_connected', {'player_id': player_id}, room=player_id)
+
+# @socketio.on('disconnect')
+# def handle_disconnect():
+#     player_id = request.sid
+#     leave_room(player_id)
+#     emit('player_disconnected', {'player_id': player_id}, room=player_id)
 
 @app.after_request
 def add_header(response):
     response.headers['X-Content-Type-Options'] = 'nosniff'
     return response
 
-@socketio.on("message")
-def handle_message(username, message):
-    if message != 'User Connected!':
-        message = message.split(": ")[1]
-        storeMessage(username, message)
-        send(message, broadcast=True)
-
-@socketio.on('connect')
-def test_connect():
-    print("User Connected!")
-
-@socketio.on("disconnect")
-def test_disconnect():
-    print("User Disconnected")
+# @sock.route("/gamews")
+# def request_game_websocket(ws):
+#     print(ws)
+#     return
     
+
 @app.route('/')
 def index():
     return render_template('login.html')
@@ -95,15 +131,16 @@ def login_or_create():
 @app.route('/play_as_guest', methods=['POST'])
 def play_as_guest():
     flash('Playing as Guest!', 'info')
-    return redirect(url_for('dashboard'))
+    username = getUsername(request)
+    return render_template('playPage.html', name=username)
+
+
 
 @app.route('/game')
 def dashboard():
-    username = None
-    if "auth_token" in request.cookies:
-        cookie_value = request.cookies.get('auth_token')
-        username = find_user(cookie_value)
+    username = getUsername(request)
     return render_template('playPage.html', name=username)
+
 @app.route('/api/chat',  methods=['GET', 'POST'])
 def add_chat_message():
     username = "Guest"
@@ -142,13 +179,15 @@ def add_like_data():
         return jsonify({"color": color, "count":count}), 201
     else:
         abort(403)
+
 def main():
     host = "0.0.0.0"
     port = 8080
 
     print("Listening on port " + str(port))
-
+    
     app.run(host=host, port=port)
+    # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
     main()
