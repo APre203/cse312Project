@@ -7,6 +7,8 @@ import html
 from flask_sock import Sock
 import time
 import json
+from util.gameBoard import GameBoard
+from util.player import Player
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -20,24 +22,31 @@ def getUsername(request):
         username = find_user(cookie_value)
     return username
 
+gameBoard = GameBoard()
 @sock.route('/gamews')
 def test_ws(socket):
-    print("I AM CONNECTED")
-    print(socket)
     username = getUsername(request)
+    if username != "Guest":
+        gameBoard.addPlayer(Player(socket, username, 50, 50, 10))
     while True:
         raw_data = socket.receive(timeout=0)
         try:
-            data_to_send = {"Username":username, "message":"server message"}
+            send_data = gameBoard.playersDict()
+            sockets = gameBoard.getSockets()
+            data_to_send = {"id":username, "server_data":send_data}
+            print("DataToSend",data_to_send)
             send_data = json.dumps(data_to_send)
             socket.send(send_data)
+            # for s in sockets:
+            #     print()
+            #     s.send(send_data)
 
             print("RAW DATA: ", raw_data)
             # recieved_data = json.loads(raw_data)
             print("DATA", json.loads(raw_data))
             
-            print("Here")
-        except:
+        except Exception as e:
+            print("EXCEPTION:",e)
             pass
         
         time.sleep(5)

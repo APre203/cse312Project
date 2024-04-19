@@ -7,16 +7,16 @@ socket.addEventListener('message', (data)=>{
     // AND WILL RETURN TOTAL DATA FROM GAME
 
     const playerData = JSON.parse(data.data);
-    
-    username = playerData.username;
-    // // Log the received data
     console.log("PlayerMap", playerData);
     
-    // // Prepare data to send back
+    username = playerData.id;
+    // Log the received data
+    
+    // Prepare data to send back
     const responseData = {
         message: "Hello from the server!",
-        Username: playerData.Username,
-        message_inside_socket: playerData.message
+        Username: username,
+        message_inside_socket: playerData.server_data
     };
 
     socket.send(JSON.stringify(responseData));
