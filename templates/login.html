@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Login</title>
+</head>
+<body onload="welcome();">
+  <h1 class="title">GAME NAME</h1>
+
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <!-- <p id="paragraph">  </p> -->
+    <h2 class="login" id="login"></h2>
+
+    <form method="post" action="{{ url_for('login_or_create') }}">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+      <br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+      <br>
+      <label for="confirm_password">Confirm Password:</label>
+      <input type="password" id="confirm_password" name="confirm_password" required>
+      <br>
+      <button type="submit" name="action" value="login">Login</button>
+      <button type="submit" name="action" value="create_account">Create Account</button>
+    </form>
+    <form method="post" action="{{ url_for('play_as_guest') }}" class="centered-form">
+      <button type="submit">Play as Guest</button>
+      <img src="{{ url_for('static', filename='no_meme.jpeg') }}" alt="Guest Image" class="centered-image">
+    </form>
+        
+  </div>
+  <script src="{{ url_for('static', filename='functions.js') }}"></script>
+</body>
+</html>

@@ -1,37 +1,42 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='playstyles.css') }}"
+    />
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
     <title>Play Page</title>
-    <link rel="stylesheet" href="/static/styles.css" />
-    <script
-      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
-      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://code.jquery.com/jquery-3.7.1.min.js"
-      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-      crossorigin="anonymous"
-    ></script>
   </head>
-  <body>
+  <body onload="updateChat()">
     <div class="container">
       <div class="game-area">
-        <!-- Your game boundary goes here -->
+        <!-- Game boundary goes here -->
         game area
+        <div id="player">
+          {% if name %} {{name}} {% else %} Guest {% endif %}
+        </div>
         <!--
-                What needs to be added:
+                What needs to be added: 
                     1. Background
                     2. Mouse detection
                     3. Ball making
                     4. Actual player character (the character will be named as the username OR guest)
-
+            
             -->
+
         <div class="leaderboard">
           <!-- Leaderboard content goes here -->
           leaderboard
-          <!--
+          <!-- 
                     This will be dynamically created and changed no need to do anything here
 
                  -->
@@ -41,8 +46,7 @@
         <!-- Sidebar content (comments, chat, etc.) goes here -->
         sidebar
         <div id="chat-messages"></div>
-
-        <!--
+        <!-- 
                 Users would be able to interact with each other by typing
                 Might not need this who knows
              -->
@@ -52,30 +56,16 @@
             Chat:
             <input id="chat-text-box" type="text" />
           </label>
-          <button type="submit" id="chat-button">Send</button>
+          <button id="chat-button" onclick="sendChat()">Send</button>
+          <br />
+          <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit" class="btn btn-danger">Logout</button>
+          </form>
         </div>
-        <script>
-          $(document).ready(function () {
-            // creates the socket object
-            const socket = io();
-            const username = "Guest";
-            $("#chat-button").on("click", () => {
-              // this gets sent on the message event to the backend, which I can emit to everyone in the room using an emit/broadcast or send/broadcast
-              socket.send(
-                username,
-                `${username}: ${$("#chat-text-box").val()}`
-              );
-              $("#chat-text-box").val("");
-            });
-            socket.on("message", (msg) => {
-              console.log(msg);
-              $("#chat-messages").append($("<p>").text(msg));
-            });
-          });
-        </script>
       </div>
     </div>
-    <body />
-    <html />
+    <script src="{{ url_for('static', filename='playfunction.js') }}"></script>
+    <script src="{{ url_for('static', filename='websocketclient.js') }}"></script>
+    <script src="/static/player.js"></script>
   </body>
 </html>
