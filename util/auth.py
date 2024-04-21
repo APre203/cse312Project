@@ -27,4 +27,7 @@ def generate_token():
 def find_user(token):
     hashed_input_token = hashlib.sha256(token.encode()).hexdigest()
     result = tokens_collection.find_one({"token":hashed_input_token})
-    return result["username"]
+    # print("Result:", result)
+    if result:
+        return result["username"]
+    return None

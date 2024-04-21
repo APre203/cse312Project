@@ -12,8 +12,10 @@ from util.player import Player
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+socketio = SocketIO(app, cors_allowed_origins="*")
+# sock = Sock(app)
 
-sock = Sock(app)
+gameBoard = GameBoard()
 
 def getUsername(request):
     username = "Guest"
@@ -22,34 +24,63 @@ def getUsername(request):
         username = find_user(cookie_value)
     return username
 
-gameBoard = GameBoard()
-@sock.route('/gamews')
-def test_ws(socket):
+@socketio.on("connect")
+def handle_connection():
+    socket = request.sid
     username = getUsername(request)
     if username != "Guest":
-        gameBoard.addPlayer(Player(socket, username, 50, 50, 10))
-    while True:
-        raw_data = socket.receive(timeout=0)
-        try:
-            send_data = gameBoard.playersDict()
-            sockets = gameBoard.getSockets()
-            data_to_send = {"id":username, "server_data":send_data}
-            print("DataToSend",data_to_send)
-            send_data = json.dumps(data_to_send)
-            socket.send(send_data)
-            # for s in sockets:
-            #     print()
-            #     s.send(send_data)
+        gameBoard.addPlayer(Player(username))
+    # gameState = gameBoard.gameState()
+    gameState = gameBoard.playersDict()
+    socketio.emit('new-gamestate',gameState)
+    print("User Connected -- Socket: ", socket)
 
-            print("RAW DATA: ", raw_data)
-            # recieved_data = json.loads(raw_data)
-            print("DATA", json.loads(raw_data))
+@socketio.on("disconnect")
+def handle_disconnect():
+    username = getUsername(request)
+    gameBoard.removePlayer(username)
+    gameState = gameBoard.playersDict()
+    socketio.emit('new-gamestate',gameState)
+    print("User Disconnect -- ", username)
+
+@socketio.on("request-game-state")
+def handle_request_state(a, b):
+    gameState = gameBoard.playersDict()
+    socketio.emit('new-gamestate',gameState)
+
+
+@socketio.on("message")
+def handle_message(a,b):
+    print("In Message")
+    print(a, b)
+    # print("Message: ", message)
+
+
+# @sock.route('/gamews')
+# def test_ws(socket):
+#     username = getUsername(request)
+#     if username != "Guest":
+#         gameBoard.addPlayer(Player(socket, username, 50, 50, 10))
+#     while True:
+#         raw_data = socket.receive(timeout=0)
+#         try:
+#             send_data = gameBoard.playersDict()
+#             data_to_send = {"id":username, "server_data":send_data}
             
-        except Exception as e:
-            print("EXCEPTION:",e)
-            pass
+#             send_data = json.dumps(data_to_send)
+#             socket.send(send_data)
+#             # for s in sockets:
+#             #     print()
+#             #     s.send(send_data)
+
+#             # print("RAW DATA: ", raw_data)
+#             # print("DATA", json.loads(raw_data))
+            
+#         except Exception as e:
+#             print("EXCEPTION:",e)
+#             pass
         
-        time.sleep(5)
+#         time.sleep(5)
 
 
 
@@ -125,14 +156,20 @@ def login_or_create():
 def play_as_guest():
     flash('Playing as Guest!', 'info')
     username = getUsername(request)
-    return render_template('playPage.html', name=username)
+    return render_template('playPage.html', name="Guest", left=50, top=50)
 
 
 
 @app.route('/game')
 def dashboard():
     username = getUsername(request)
-    return render_template('playPage.html', name=username)
+    player = gameBoard.findPlayer(username)
+    if not player:
+        return render_template('playPage.html', name="Guest", left=50, top=50)
+
+    left = player.left
+    top = player.top
+    return render_template('playPage.html', name=username, left=left, top=top)
 
 
 @app.route('/logout', methods=['POST'])
@@ -146,7 +183,8 @@ def add_chat_message():
     username = "Guest"
     if "auth_token" in request.cookies:
         cookie_value = request.cookies.get('auth_token')
-        username = find_user(cookie_value)
+        username = getUsername(request)
+        
     if request.method == "GET":
         # GET TOTAL FROM DATABASE
         return jsonify(getallmessages(username))#[{"username": "test", "message": "something","id":1},{"username": "test2", "message": "something2","id":2}]), 200
@@ -170,7 +208,7 @@ def add_like_data():
         data = request.json
         id = data["id"]
 
-        username = find_user(cookie_value)
+        username = getUsername(request)
         message = getSingleMessage(id)
         notLiked = True
         if username in  message["likes"]:

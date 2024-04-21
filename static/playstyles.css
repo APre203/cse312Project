@@ -41,10 +41,10 @@ body, html {
     border-top: 1px solid #ccc; 
 }
 
-#player {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: red;
-    border-radius: 50%;
-  }
+.player-area div {
+position: absolute;
+width: 20px;
+height: 20px;
+background-color: red;
+border-radius: 50%;
+}

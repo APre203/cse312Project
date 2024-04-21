@@ -5,15 +5,18 @@ class GameBoard():
     players: List[Player] = []
 
     def __init__(self):
+        self.clearGameboard()
         return
     
     def addPlayer(self, player:Player):
+        if player.id == "Guest":
+            return
         self.players.append(player)
 
     def playersDict(self): # id: {location, size}
         retval = {}
         for player in self.players:
-            retval[player.id] = {"location":[player.x,player.y], "size":player.radius}
+            retval[player.id] = {"location":[player.top,player.left], "size":player.width}
         return retval
     
     def removePlayer(self, id:str):
@@ -36,5 +39,5 @@ class GameBoard():
             player.updateSize(size)
         return self.playersDict()
     
-    def getSockets(self):
-        return [player.socket for player in self.players]
+    def clearGameboard(self):
+        self.players = []
