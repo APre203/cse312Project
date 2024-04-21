@@ -59,7 +59,7 @@ function addPlayer(player, playerDict){
 }
 
 function playerHTML(player, playerDict){
-    let playerHTML = '<div id="' + player +'" style="left: '+ playerDict["location"][0] +'px; top: '+ playerDict["location"][1] +'px;">' + player + '</div>';
+    let playerHTML = '<div id="' + player +'" style="left: '+ playerDict["location"][1] +'px; top: '+ playerDict["location"][0] +'px;">' + player + '</div>';
     return playerHTML;
 }
 

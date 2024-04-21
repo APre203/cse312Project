@@ -44,15 +44,16 @@ def handle_disconnect():
     print("User Disconnect -- ", username)
 
 @socketio.on("request-game-state")
-def handle_request_state(a, b):
+def handle_request_state():
     gameState = gameBoard.playersDict()
     socketio.emit('new-gamestate',gameState)
 
 
 @socketio.on("message")
-def handle_message(a,b):
-    print("In Message")
-    print(a, b)
+def handle_message(message, b):
+    print("IN MESSAGE: ", message)
+    if message == "request-game-state":
+        handle_request_state()
     # print("Message: ", message)
 
 
