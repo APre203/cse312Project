@@ -38,10 +38,10 @@ socket.addEventListener('message', (data)=>{
 })
 
 function addPlayer(player, playerDict){
-    const playerArea = document.getElementsByClassName("player-area");
+    const pA = document.getElementsByClassName("player-area")[0];
     // console.log("PlayerArea",playerArea);
     // console.log("Inner Player", playerArea.innerHTML);
-    Array.from(playerArea).forEach(pA => {
+    // Array.from(playerArea).forEach(pA => {
         // console.log("NEWPLAYERAREA",pA.innerHTML);
         const existingPlayer = pA.querySelector("#" + player); // Check if a player with the same id already exists
         console.log("ExistingPlayer",existingPlayer);
@@ -54,7 +54,7 @@ function addPlayer(player, playerDict){
             // Player doesn't exist, add new player HTML
             pA.innerHTML += playerHTML(player, playerDict);
         }
-    })
+    // })
     // gameArea.innerHTML += playerHTML(player, playerDict);
 }
 

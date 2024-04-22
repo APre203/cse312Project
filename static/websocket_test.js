@@ -12,9 +12,12 @@ async function initialize() {
             socket.on('new-gamestate', function(data) {
                 console.log("Received game state from server:", data);
                 // Resolve the promise with the received game state data
-                playerClear();
                 addPlayerstoDOM(data);
+                console.log("adding listener");
+                addUserListener();
+                console.log("finished adding listener");
                 resolve(data);
+                
             });
         });
         
@@ -41,6 +44,9 @@ socket.on('new-gamestate', function(data){ // NEW GAMESTATE
     console.log("Data From Server: ", data);
     playerClear();
     addPlayerstoDOM(data);
+    console.log("adding listener");
+    addUserListener();
+    console.log("finished adding listener");
 });
 
 function addPlayerstoDOM(gameStateData){
@@ -76,32 +82,30 @@ function addPlayer(player, playerDict){
         console.log("ExistingPlayer",existingPlayer);
         if (existingPlayer) {
             // Player already exists, update specific values
-            existingPlayer.style.left = playerDict["location"][0];
-            existingPlayer.style.top = playerDict["location"][1];
+            existingPlayer.style.left = playerDict["location"][1];
+            existingPlayer.style.top = playerDict["location"][0];
             
         } else {
             // Player doesn't exist, add new player HTML
             pA.innerHTML += playerHTML(player, playerDict);
         }
     })
-    // gameArea.innerHTML += playerHTML(player, playerDict);
 }
 
 function addUserListener(){
-    document.addEventListener("DOMContentLoaded", function() {
-        const gameArea = document.querySelector('.game-area');
-        const player = document.getElementById(username);
-        console.log("PLAYER",player)
-        const playerRect = player.getBoundingClientRect();
-        let playerCenterX = playerRect.left + playerRect.width / 2;
-        let playerCenterY = playerRect.top + playerRect.height / 2;
-        
-        const playerRadius = Math.min(playerRect.width, playerRect.height) / 2;
-        
-        const baseSpeed = 200; // Base speed
-        const speedMultiplier = 1 / playerRadius; // Speed multiplier
-        
-        document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function(e) {
+            const gameArea = document.querySelector('.game-area');
+            const player = document.getElementById(username);
+            console.log("PLAYER",player)
+            const playerRect = player.getBoundingClientRect();
+            let playerCenterX = playerRect.left + playerRect.width / 2;
+            let playerCenterY = playerRect.top + playerRect.height / 2;
+            
+            const playerRadius = Math.min(playerRect.width, playerRect.height) / 2;
+            
+            const baseSpeed = 200; // Base speed
+            const speedMultiplier = 1 / playerRadius; // Speed multiplier
+            
             const keyW = 'w';
             const keyA = 'a';
             const keyS = 's';
@@ -147,5 +151,4 @@ function addUserListener(){
             player.style.top = playerCenterY - playerRect.height / 2 + 'px';
             socket.send("update-game-state",{username: {"location":[player.style.top,player.style.left], "width":10}})
         });
-    });
 }

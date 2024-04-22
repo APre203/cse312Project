@@ -33,7 +33,7 @@ def handle_connection():
     # gameState = gameBoard.gameState()
     gameState = gameBoard.playersDict()
     socketio.emit('new-gamestate',gameState)
-    print("User Connected -- Socket: ", socket)
+    print("User Connected -- ",username,  "-- Socket: ", socket)
 
 @socketio.on("disconnect")
 def handle_disconnect():
