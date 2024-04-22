@@ -21,6 +21,7 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 socketio = SocketIO(app, cors_allowed_origins="*")
 # sock = Sock(app)
+app.config['UPLOAD_FOLDER'] = 'static/images'
 
 gameBoard = GameBoard()
 
