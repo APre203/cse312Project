@@ -19,7 +19,16 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-socketio = SocketIO(app, cors_allowed_origins="*", ssl_context="adhoc")
+ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
+
+
+'''
+ssl_certificate /etc/letsencrypt/live/heapoverflow312.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/heapoverflow312.me/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    '''
+
+socketio = SocketIO(app, cors_allowed_origins="*", ssl_context=ssl_context)
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 

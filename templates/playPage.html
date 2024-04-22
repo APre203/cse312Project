@@ -80,8 +80,8 @@
     </div>
     <script>
       const username = "{{ name }}";
-      wss = true;
-      let socket = io()
+      wss = false;
+      let socket = io();
       if (wss){
         socket = io("wss://heapoverflow312.me");
       }
