@@ -79,12 +79,7 @@
       </div>
     </div>
     <script>
-      const username = "{{ name }}";
-      wss = false;
-      let socket = io();
-      if (wss){
-        socket = io("wss://heapoverflow312.me");
-      }
+      const username = "{{ name }}";      
     </script>
     <script src="{{ url_for('static', filename='websocket_test.js') }}"></script>
     <script src="{{ url_for('static', filename='playfunction.js') }}"></script>

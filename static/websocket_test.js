@@ -1,4 +1,7 @@
-// const socket = io();
+const socket = io.connect();
+// if (wss){
+//     io.connect("https://heapoverflow312.me")
+// }
 async function initialize() {
     try {
         // Send request for game state
