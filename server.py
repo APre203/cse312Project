@@ -1,34 +1,20 @@
-import math
-import os
-import random
-import re
 import uuid
 from flask import Flask, render_template, request, redirect, send_file, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
 from flask_socketio import SocketIO, emit, send, join_room, leave_room
 import datetime
 from util.auth import *
 from util.db import *
-import html
-from flask_sock import Sock
-import time
 import json
 from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
 from util.player import Player 
-from werkzeug.utils import secure_filename 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
 
 
-'''
-ssl_certificate /etc/letsencrypt/live/heapoverflow312.me/fullchain.pem; # managed by Certbot
-    ssl_certificate_key /etc/letsencrypt/live/heapoverflow312.me/privkey.pem; # managed by Certbot
-    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-    '''
-
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", transports=['websocket'])
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
