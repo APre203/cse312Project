@@ -56,13 +56,33 @@ def handle_request_state():
     gameState = gameBoard.playersDict()
     socketio.emit('new-gamestate',gameState)
 
+@socketio.on("handle_update_game_state")
+def handle_update_game_state(userUpdate):
+    try:
+        userUpdate = json.loads(userUpdate)
+        print("USER-Update -- ",userUpdate)
+        username = userUpdate["username"]["username"]
+        player = gameBoard.findPlayer(username)
+        if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
+            player.top = userUpdate["username"]["location"][0]
+            player.left = userUpdate["username"]["location"][1]
+            
+            gameState = gameBoard.playersDict()
+            socketio.emit('new-gamestate',gameState)
+    except Exception as e:
+        print(e)
+        return
+
 
 @socketio.on("message")
 def handle_message(message, b):
-    print("IN MESSAGE: ", message)
+    # print("IN MESSAGE: ", message)
     if message == "request-game-state":
         handle_request_state()
+    elif message == "update-game-state":
+        handle_update_game_state(b)
     # print("Message: ", message)
+    # {"username":username, username: {"location":[player.style.top,player.style.left], "width":10}}
 
 
 # @sock.route('/gamews')
@@ -258,26 +278,6 @@ def handle_image_upload():
         
         request.files["upload"].save(path_of_image)
         storeImage(request, path_of_image)
-    # if username != "Guest":
-    #     # Get the body of the request and extract the neccessary information
-    #     body = request.get_data()
-    #     # Get the boundary from header Content-Type
-    #     boundary = request.headers.get("Content-Type", None).split('; ')[1].split("=")[1]
-    #     #Remove the starting boundary which includes -- before it 
-    #     remove_starting_boundary = body.split(b'--' + bytes(boundary, "utf-8") + b'\r\n', 1)[1]
-    #     #Remove the ending boundary 
-    #     remove_ending_boundary = remove_starting_boundary.split(b'\r\n' + b'--' + bytes(boundary, 'utf-8') + b'--')[0]
-    #     # Find the bytes of the image
-    #     bytes_of_image = remove_ending_boundary.split(b'\r\n\r\n')[1]
-    #     headers = remove_ending_boundary.split(b'\r\n\r\n')[0]
-    #     # Now that you've gotten the bytes of the image write it to a file and save it on disk
-    #     path_of_image = f'static/images/image{random.randint(1, 5)}.jpg'
-    #     with open(path_of_image, 'wb') as f:
-    #         f.write(bytes_of_image)
-    #     # create a function that takes a filename and username if authorized
-    #     # and would store the image with the auth token and username being the id
-    #     storeImage(request, path_of_image)
-        
     return redirect("/upload")
 @app.route("/images", methods=["GET"])
 def get_images():

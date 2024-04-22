@@ -1,4 +1,4 @@
-const socket = io();
+// const socket = io();
 
 async function initialize() {
     try {
@@ -13,10 +13,10 @@ async function initialize() {
                 console.log("Received game state from server:", data);
                 // Resolve the promise with the received game state data
                 addPlayerstoDOM(data);
+                resolve(data);
                 console.log("adding listener");
                 addUserListener();
                 console.log("finished adding listener");
-                resolve(data);
                 
             });
         });
@@ -44,9 +44,11 @@ socket.on('new-gamestate', function(data){ // NEW GAMESTATE
     console.log("Data From Server: ", data);
     playerClear();
     addPlayerstoDOM(data);
+    
     console.log("adding listener");
     addUserListener();
     console.log("finished adding listener");
+
 });
 
 function addPlayerstoDOM(gameStateData){
@@ -93,9 +95,10 @@ function addPlayer(player, playerDict){
 }
 
 function addUserListener(){
-    document.addEventListener('keydown', function(e) {
+    const player = document.getElementById(username);
+    if (player != null){
+        document.addEventListener('keydown', function(e) {
             const gameArea = document.querySelector('.game-area');
-            const player = document.getElementById(username);
             console.log("PLAYER",player)
             const playerRect = player.getBoundingClientRect();
             let playerCenterX = playerRect.left + playerRect.width / 2;
@@ -149,6 +152,8 @@ function addUserListener(){
             
             player.style.left = playerCenterX - playerRect.width / 2 + 'px';
             player.style.top = playerCenterY - playerRect.height / 2 + 'px';
-            socket.send("update-game-state",{username: {"location":[player.style.top,player.style.left], "width":10}})
+            socket.send("update-game-state",JSON.stringify({"username": {"username":username, "location":[parseInt(player.style.top),parseInt(player.style.left)], "width":10}}))
         });
+    }
+        
 }
