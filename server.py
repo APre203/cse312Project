@@ -188,6 +188,7 @@ def login_or_create():
 def play_as_guest():
     flash('Playing as Guest!', 'info')
     username = getUsername(request)
+    response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
     return render_template('playPage.html', name="Guest", left=50, top=50)
 
 

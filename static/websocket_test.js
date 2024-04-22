@@ -6,7 +6,7 @@ async function initialize() {
         // playerClear();
         socket.send("request-game-state", "get-game-state");
 
-        // Define a promise to handle the game state response
+        
         const gameStatePromise = new Promise((resolve, reject) => {
             // Set up an event listener for the 'new-gamestate' event
             socket.on('new-gamestate', function(data) {
@@ -14,9 +14,9 @@ async function initialize() {
                 // Resolve the promise with the received game state data
                 addPlayerstoDOM(data);
                 resolve(data);
-                console.log("adding listener");
+                // console.log("adding listener");
                 addUserListener();
-                console.log("finished adding listener");
+                // console.log("finished adding listener");
                 
             });
         });
@@ -26,15 +26,12 @@ async function initialize() {
         console.log("Game state data received:", gameStateData);
         
 
-
-        // Proceed with the rest of the initialization
-        // ...
     } catch (error) {
         console.error('Error initializing:', error);
     }
 }
 
-// Call the initialize function to start the initialization process
+
 initialize();
 
 // handleInit();
@@ -43,12 +40,9 @@ initialize();
 socket.on('new-gamestate', function(data){ // NEW GAMESTATE
     console.log("Data From Server: ", data);
     playerClear();
-    addPlayerstoDOM(data);
-    
-    console.log("adding listener");
+    addPlayerstoDOM(data); 
     addUserListener();
-    console.log("finished adding listener");
-
+   
 });
 
 function addPlayerstoDOM(gameStateData){
@@ -97,9 +91,9 @@ function addPlayer(player, playerDict){
 function addUserListener(){
     const player = document.getElementById(username);
     if (player != null){
-        document.addEventListener('keydown', function(e) {
+        function handleKeyDown(e){
             const gameArea = document.querySelector('.game-area');
-            console.log("PLAYER",player)
+            
             const playerRect = player.getBoundingClientRect();
             let playerCenterX = playerRect.left + playerRect.width / 2;
             let playerCenterY = playerRect.top + playerRect.height / 2;
@@ -152,8 +146,13 @@ function addUserListener(){
             
             player.style.left = playerCenterX - playerRect.width / 2 + 'px';
             player.style.top = playerCenterY - playerRect.height / 2 + 'px';
-            socket.send("update-game-state",JSON.stringify({"username": {"username":username, "location":[parseInt(player.style.top),parseInt(player.style.left)], "width":10}}))
-        });
+            if (parseInt(player.style.top) != 0 || parseInt(player.style.left) != 0){
+                console.log("PLAYER",player)
+                socket.send("update-game-state",JSON.stringify({"username": {"username":username, "location":[parseInt(player.style.top),parseInt(player.style.left)], "width":10}}))
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown);
     }
         
 }
