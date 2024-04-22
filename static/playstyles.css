@@ -1,16 +1,13 @@
-/* Reset default margin and padding */
 body, html {
     margin: 0;
     padding: 0;
 }
 
-/* Container to hold game area and sidebar */
 .container {
     display: flex; 
     height: 100vh; 
 }
 
-/* Game area styles */
 .game-area {
     flex: 1; 
     position: relative; 
@@ -18,7 +15,6 @@ body, html {
     border: 2px solid #ccc; 
 }
 
-/* Leaderboard styles */
 .leaderboard {
     position: absolute; 
     top: 20px; 
@@ -31,7 +27,6 @@ body, html {
     
 }
 
-/* Sidebar styles */
 .sidebar {
     display: flex;
     flex-direction: column;
@@ -40,22 +35,16 @@ body, html {
     border-left: 2px solid #ccc; 
 }
 
-/* Chat form styles */
 .chat-form {
     margin-top: auto; 
     padding: 10px; 
     border-top: 1px solid #ccc; 
 }
 
-#player {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: red;
-    border-radius: 50%;
-  }
-
-  .liked {
-    background-color: blue; /* Adjust the background color when liked */
-    color: white; /* Adjust the text color when liked */
+.player-area div {
+position: absolute;
+width: 20px;
+height: 20px;
+background-color: red;
+border-radius: 50%;
 }

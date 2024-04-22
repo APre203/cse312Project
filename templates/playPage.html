@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='playstyles.css') }}"
+    />
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script> -->
+    <script
+      src="https://cdn.socket.io/4.7.5/socket.io.min.js"
+      integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
     <title>Play Page</title>
-    <link rel="stylesheet" href="/static/playstyles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-</head>
-<body onload="updateChat()">
+  </head>
+  <body onload="updateChat();">
     <div class="container">
-        <div class="game-area">
-            <!-- Game boundary goes here -->
-            game area
-            <div id="player">
-                {% if name %} 
-                {{name}} 
-                {% else %} 
-                Guest 
-                {% endif %}
-            </div>
-            <!--
+      <div class="game-area">
+        <!-- Game boundary goes here -->
+        <div class="player-area">
+          <!-- {% if name %}
+                <div id="{{ name }}">{{ name }}</div>
+                {% else %}
+                <div id="Guest">Guest</div>
+                {% endif %} -->
+        </div>
+        <!--
                 What needs to be added: 
                     1. Background
                     2. Mouse detection
@@ -27,38 +45,45 @@
                     4. Actual player character (the character will be named as the username OR guest)
             
             -->
-            <div class="leaderboard">
-                <!-- Leaderboard content goes here -->
-                leaderboard
-                <!-- 
+
+        <div class="leaderboard">
+          <!-- Leaderboard content goes here -->
+          leaderboard
+          <!-- 
                     This will be dynamically created and changed no need to do anything here
 
                  -->
-            </div>
         </div>
-        <div class="sidebar" id="sidebar">
-            <!-- Sidebar content (comments, chat, etc.) goes here -->
-            sidebar
-            <div id="chat-messages">
-                <!-- HTML -->
-                
-            </div>
-            <!-- 
+      </div>
+      <div class="sidebar" id="sidebar">
+        <!-- Sidebar content (comments, chat, etc.) goes here -->
+        sidebar
+        <div id="chat-messages"></div>
+        <!-- 
                 Users would be able to interact with each other by typing
                 Might not need this who knows
              -->
-            <div class="chat-form">
-                <hr>
-                <label>
-                    Chat:
-                    <input id="chat-text-box" type="text">
-                </label>
-                <button id="chat-button" onclick="sendChat()">Send</button>
-            </div>
+        <div class="chat-form">
+          <hr />
+          <label>
+            Chat:
+            <input id="chat-text-box" type="text" />
+          </label>
+          <button id="chat-button" onclick="sendChat()">Send</button>
+          <br />
+
+          <form action="{{ url_for('logout') }}" method="post">
+            <button type="submit" class="btn btn-danger">Logout</button>
+          </form>
         </div>
+      </div>
     </div>
+    <script>
+      const username = "{{ name }}";      
+    </script>
+    <script src="{{ url_for('static', filename='websocket_test.js') }}"></script>
+    <script src="{{ url_for('static', filename='playfunction.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='websocketclient.js') }}"></script> -->
     <script src="/static/player.js"></script>
-    <script src="/static/functions.js"></script>
-    
-</body>
+  </body>
 </html>

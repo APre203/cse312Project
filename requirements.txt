@@ -1,5 +1,7 @@
-pymongo
 flask
-# json
-# html
-# re
+pymongo
+flask_socketio
+flask_sock
+flask_wtf
+wtforms
+wtforms.validators
