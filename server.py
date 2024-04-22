@@ -1,4 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
+import math
+import os
+import random
+import re
+import uuid
+from flask import Flask, render_template, request, redirect, send_file, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
 from flask_socketio import SocketIO, emit, send, join_room, leave_room
 import datetime
 from util.auth import *
@@ -7,8 +12,10 @@ import html
 from flask_sock import Sock
 import time
 import json
+from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
-from util.player import Player
+from util.player import Player 
+from werkzeug.utils import secure_filename 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -103,7 +110,6 @@ def playstyle():
 def style():
     return send_from_directory('static', 'styles.css')
 
-
 @app.route('/login_or_create', methods=['POST'])
 def login_or_create():
 
@@ -127,7 +133,9 @@ def login_or_create():
                 hashed_token = hash_token(token)
                 tokens_collection.delete_one({'username': username})
                 tokens_collection.insert_one({'username': username, 'token': hashed_token})
-                response = make_response(redirect(url_for('dashboard')))
+                # have them redirect to an upload image page
+                #response = make_response(redirect(url_for('dashboard')))
+                response = make_response(redirect(url_for('handle_upload')))
                 response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
                 return response
         flash('Login failed. Please check your username and password.', 'danger')
@@ -146,7 +154,9 @@ def login_or_create():
             salt = generate_salt()
             hashed_password = hash_password(password, salt)
             users_collection.insert_one({'username': username, 'password': hashed_password, 'salt': salt})
-            response = make_response(redirect(url_for('dashboard')))
+            # have them redirect to a upload image page
+            response = make_response(redirect(url_for('handle_upload')))
+            #response = make_response(redirect(url_for('dashboard')))
             response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
             return response
         else:
@@ -172,7 +182,12 @@ def dashboard():
     top = player.top
     return render_template('playPage.html', name=username, left=left, top=top)
 
-
+# this function is responsible for handling POST requests from the client
+# when the client uploads a photo, it will be sent as a post request on this path
+@app.route("/upload", methods=["GET", "POST"])
+def handle_upload():
+    username = getUsername(request)
+    return render_template('upload.html', name=username)
 @app.route('/logout', methods=['POST'])
 def logout():
     response = make_response(redirect(url_for('index')))
@@ -218,7 +233,63 @@ def add_like_data():
         return jsonify({"color": color, "count":count}), 201
     else:
         abort(403)
+@app.route("/upload-image", methods=['POST'])
+def handle_image_upload():
+    # This method is called when an image is uploaded
+    # I will get bytes for the image which I need to read from the request
+    # Check if the user is authorized
+    flash_messages = get_flashed_messages(with_categories=False, category_filter=['danger'])
 
+    for message in flash_messages:
+        flash(message, 'danger')
+
+    username = getUsername(request)
+    if username != "Guest":
+        unique_name = str(uuid.uuid4())
+        path_of_image = app.config["UPLOAD_FOLDER"] + '/' + f'{unique_name}.jpg'
+        # print(path_of_image)
+        # print(len(request.files.getlist("upload")))
+        # print(request.files.get("upload", None).filename)
+        if request.files.get("upload", None).filename == '':
+            print("entered here")
+            flash("Please upload an image",'danger')
+            return redirect(url_for('handle_upload'))
+        
+        request.files["upload"].save(path_of_image)
+        storeImage(request, path_of_image)
+    # if username != "Guest":
+    #     # Get the body of the request and extract the neccessary information
+    #     body = request.get_data()
+    #     # Get the boundary from header Content-Type
+    #     boundary = request.headers.get("Content-Type", None).split('; ')[1].split("=")[1]
+    #     #Remove the starting boundary which includes -- before it 
+    #     remove_starting_boundary = body.split(b'--' + bytes(boundary, "utf-8") + b'\r\n', 1)[1]
+    #     #Remove the ending boundary 
+    #     remove_ending_boundary = remove_starting_boundary.split(b'\r\n' + b'--' + bytes(boundary, 'utf-8') + b'--')[0]
+    #     # Find the bytes of the image
+    #     bytes_of_image = remove_ending_boundary.split(b'\r\n\r\n')[1]
+    #     headers = remove_ending_boundary.split(b'\r\n\r\n')[0]
+    #     # Now that you've gotten the bytes of the image write it to a file and save it on disk
+    #     path_of_image = f'static/images/image{random.randint(1, 5)}.jpg'
+    #     with open(path_of_image, 'wb') as f:
+    #         f.write(bytes_of_image)
+    #     # create a function that takes a filename and username if authorized
+    #     # and would store the image with the auth token and username being the id
+    #     storeImage(request, path_of_image)
+        
+    return redirect("/upload")
+@app.route("/images", methods=["GET"])
+def get_images():
+    if "auth_token" in request.cookies:
+        data = getImage(request)
+        return data
+
+@app.route("/static/images/<string:image_id>", methods=["GET"])
+def handle_picture_req(image_id):
+    file_path = f"static/images/{image_id}"
+    with open(file_path, 'rb') as file:
+        file=file.read()
+    return file, 200
 def main():
     host = "0.0.0.0"
     port = 8080

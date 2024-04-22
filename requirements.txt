@@ -2,3 +2,6 @@ flask
 pymongo
 flask_socketio
 flask_sock
+flask_wtf
+wtforms
+wtforms.validators
