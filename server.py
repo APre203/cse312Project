@@ -20,7 +20,7 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 # app.config["SECRET_KEY"] = 'somesecretkey'
-app.config['UPLOAD_FOLDER'] = 'static/images'
+app.config['UPLOAD_FOLDER'] = 'static/'
 
 sock = Sock(app)
 
@@ -209,7 +209,7 @@ def handle_image_upload():
     username = getUsername(request)
     if username != "Guest":
         unique_name = str(uuid.uuid4())
-        path_of_image = app.config["UPLOAD_FOLDER"] + '/' + f'{unique_name}.jpg'
+        path_of_image = app.config["UPLOAD_FOLDER"] + f'{unique_name}.jpg'
         # print(path_of_image)
         # print(len(request.files.getlist("upload")))
         # print(request.files.get("upload", None).filename)
