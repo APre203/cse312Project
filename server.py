@@ -49,6 +49,8 @@ def handle_disconnect():
     gameBoard.removePlayer(username)
     gameState = gameBoard.playersDict()
     socketio.emit('new-gamestate',gameState)
+    # if len(gameBoard.players) == 0:
+    #     gameBoard = GameBoard()
     print("User Disconnect -- ", username)
 
 @socketio.on("request-game-state")
@@ -60,7 +62,7 @@ def handle_request_state():
 def handle_update_game_state(userUpdate):
     try:
         userUpdate = json.loads(userUpdate)
-        print("USER-Update -- ",userUpdate)
+        # print("USER-Update -- ",userUpdate)
         username = userUpdate["username"]["username"]
         player = gameBoard.findPlayer(username)
         if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
@@ -188,8 +190,10 @@ def login_or_create():
 def play_as_guest():
     flash('Playing as Guest!', 'info')
     username = getUsername(request)
-    response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
-    return render_template('playPage.html', name="Guest", left=50, top=50)
+    response = make_response(render_template('playPage.html', name="Guest", left=50, top=50))
+    #response = make_response(redirect(url_for('dashboard')))
+    response.set_cookie('auth_token', "none", httponly=True, expires=0)
+    return response # render_template('playPage.html', name="Guest", left=50, top=50)
 
 
 

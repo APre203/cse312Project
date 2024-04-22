@@ -1,5 +1,4 @@
 // const socket = io();
-
 async function initialize() {
     try {
         // Send request for game state
@@ -10,20 +9,18 @@ async function initialize() {
         const gameStatePromise = new Promise((resolve, reject) => {
             // Set up an event listener for the 'new-gamestate' event
             socket.on('new-gamestate', function(data) {
-                console.log("Received game state from server:", data);
+                // console.log("Received game state from server:", data);
                 // Resolve the promise with the received game state data
                 addPlayerstoDOM(data);
-                resolve(data);
-                // console.log("adding listener");
                 addUserListener();
-                // console.log("finished adding listener");
+                resolve(data);
                 
             });
         });
         
         // Wait for the game state promise to resolve
         const gameStateData = await gameStatePromise;
-        console.log("Game state data received:", gameStateData);
+        // console.log("Game state data received:", gameStateData);
         
 
     } catch (error) {
@@ -31,16 +28,17 @@ async function initialize() {
     }
 }
 
-
 initialize();
+
+// initialize();
 
 // handleInit();
 // socket.on('init', handleInit);
 
 socket.on('new-gamestate', function(data){ // NEW GAMESTATE
-    console.log("Data From Server: ", data);
+    // console.log("Data From Server: ", data);
     playerClear();
-    addPlayerstoDOM(data); 
+    addPlayerstoDOM(data);
     addUserListener();
    
 });
@@ -75,7 +73,7 @@ function addPlayer(player, playerDict){
     Array.from(playerArea).forEach(pA => {
         // console.log("NEWPLAYERAREA",pA.innerHTML);
         const existingPlayer = pA.querySelector("#" + player); // Check if a player with the same id already exists
-        console.log("ExistingPlayer",existingPlayer);
+        // console.log("ExistingPlayer",existingPlayer);
         if (existingPlayer) {
             // Player already exists, update specific values
             existingPlayer.style.left = playerDict["location"][1];
@@ -146,8 +144,7 @@ function addUserListener(){
             
             player.style.left = playerCenterX - playerRect.width / 2 + 'px';
             player.style.top = playerCenterY - playerRect.height / 2 + 'px';
-            if (parseInt(player.style.top) != 0 || parseInt(player.style.left) != 0){
-                console.log("PLAYER",player)
+            if (parseInt(player.style.top) != 0 || parseInt(player.style.left) != 0){                
                 socket.send("update-game-state",JSON.stringify({"username": {"username":username, "location":[parseInt(player.style.top),parseInt(player.style.left)], "width":10}}))
             }
         }
