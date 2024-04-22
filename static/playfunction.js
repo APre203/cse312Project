@@ -40,9 +40,10 @@ function addChatMessage(messageJSON) {
 
   var likeButton = document.createElement("button");
   var img=document.createElement("img")
-  img.height="100px"
-  img.width="100px"
-  img.src=messageJSON.filename
+  img.height=20
+  img.width=20
+  img.src= "static/images/" + messageJSON.username + ".jpg"
+  img.onerror = "this.src='static/images/Guest.jpg'"
   messageText.textContent = messageJSON.username + ": " + messageJSON.message;
 
   // console.log("Count",messageJSON.count)

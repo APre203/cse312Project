@@ -14,7 +14,7 @@ app.secret_key = 'your_secret_key'
 ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
 
 
-socketio = SocketIO(app, cors_allowed_origins="*", transports=['websocket'])
+socketio = SocketIO(app, cors_allowed_origins="*")#, transports=['websocket'])
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
@@ -234,7 +234,7 @@ def add_chat_message():
     if message:
         id = storeMessage(username, message)
         #chat_collection.insert_one({'username': username, 'message': message})
-        return jsonify({"username": username, "filename":id[1], "message": message,"id":id, "count":0}), 201
+        return jsonify({"username": username, "message": message,"id":id, "count":0}), 201 #"filename":id[1]
     else:
         return jsonify({'error': 'Username and message are required'}), 400
     
@@ -268,6 +268,7 @@ def handle_image_upload():
     if username != "Guest":
         unique_name = str(uuid.uuid4())
         path_of_image = app.config["UPLOAD_FOLDER"] + f'{unique_name}.jpg'
+        path_of_image = app.config["UPLOAD_FOLDER"] + f'/{username}.jpg'
         # print(path_of_image)
         # print(len(request.files.getlist("upload")))
         # print(request.files.get("upload", None).filename)
@@ -288,8 +289,12 @@ def get_images():
 @app.route("/static/images/<string:image_id>", methods=["GET"])
 def handle_picture_req(image_id):
     file_path = f"static/images/{image_id}"
-    with open(file_path, 'rb') as file:
-        file=file.read()
+    try:
+        with open(file_path, 'rb') as file:
+            file=file.read()
+    except:
+        with open('static/images/Guest.jpg', 'rb') as file:
+            file=file.read()
     return file, 200
 def main():
     host = "0.0.0.0"
@@ -297,7 +302,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    socketio.run(app, host=host, port=port,ssl_context=ssl_context, allow_unsafe_werkzeug=True)
+    socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":

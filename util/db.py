@@ -7,28 +7,29 @@ image_uploads = db["uploads"]
 def storeMessage(username, msg):
     id = chat_collection.count_documents({})
     image_filename = image_uploads.find_one({"username": username})
-    x=image_filename["filename"]
+    # x=image_filename["filename"]
     if username=="Guest":
-        chat_collection.insert_one({"username": username,"message": msg, "id":id, "likes":[], "count":0, "filename":f'<img src="/static/images/GuestProfilePic.jpg" alt="Post image">'})
-        return [id, '<img src="/static/images/GuestProfilePic.jpg" alt="Post image">']
-    
-    x3=f'<img src="/static/images/{x}" alt="Post image">'
-    chat_collection.insert_one({"username": username,"message": msg, "id":id, "likes":[], "count":0, "filename":f'<img src="/static/images/{x}" alt="Post image">'})
+        chat_collection.insert_one({"username": username,"message": msg, "id":id, "likes":[], "count":0, "filename":"static/images/Guest.jpg"})
+        return [id, '<img src="/static/images/Guest.jpg" alt="Post image">']
+    x3 = 'fake'
+    # x3=f'<img src="/static/images/{x}" alt="Post image">'
+
+    chat_collection.insert_one({"username": username,"message": msg, "id":id, "likes":[], "count":0, "filename":"static/images/{username}"})
     return [id, x3]
 
 def getallmessages(currentUser):
     retval = []
     if currentUser== "Guest":
         for record in chat_collection.find():
-            print(record["filename"])
-            retval.append({"username":record["username"], "message":record["message"], "filename":record["filename"], "id":record["id"],"count":record["count"], "color":"none"})
+            # print(record["filename"])
+            retval.append({"username":record["username"], "message":record["message"], "id":record["id"],"count":record["count"], "color":"none"}) #, "filename":record["filename"]
     else:
         for record in chat_collection.find():
             color = "transparent"
             if currentUser in  record["likes"]:
                 color = "green"
-            print(record["filename"])
-            retval.append({"username":record["username"], "message":record["message"], "filename":record["filename"], "id":record["id"],"count":record["count"], "color":color})
+            # print(record["filename"])
+            retval.append({"username":record["username"], "message":record["message"], "id":record["id"],"count":record["count"], "color":color}) #, "filename":record["filename"
     return retval
 
 def getSingleMessage(id):

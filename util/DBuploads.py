@@ -28,11 +28,7 @@ def getImage(request:str):
         list_of_all_images = []
         if image_filename:
             for image in image_filename:
-                print("lalalallalalallalalallala")
-                print(image)
-                print("lalalallalalallalalallala")
                 image.pop("_id")
-                print(image)
                 list_of_all_images.append(image)
             return json.dumps(list_of_all_images)
         else:
