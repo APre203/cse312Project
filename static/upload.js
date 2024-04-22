@@ -13,8 +13,7 @@ function fetchImageList() {
 
       data.forEach((image) => {
         const liElement = document.createElement("li");
-        random_num = Math.round(Math.random() * 5);
-        liElement.innerHTML = `Uploaded Photo ${random_num}`;
+        liElement.innerHTML = `Uploaded Photo ${image.filename.split("/")[1]}`;
         liElement.addEventListener("click", function () {
           displayImage(image.filename);
         });

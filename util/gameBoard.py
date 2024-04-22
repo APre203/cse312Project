@@ -1,8 +1,9 @@
 from .player import Player
-from typing import List
+from typing import List, Dict
 class GameBoard():
 
     players: List[Player] = []
+    removed_players: Dict[str, Player] = {}
 
     def __init__(self):
         self.clearGameboard()
@@ -11,7 +12,12 @@ class GameBoard():
     def addPlayer(self, player:Player):
         if player.id == "Guest":
             return
-        self.players.append(player)
+        elif player.id in self.removed_players:
+            new_player = self.removed_players.pop(player.id)
+            self.players.append(new_player)
+            
+        else:
+            self.players.append(player)
 
     def playersDict(self): # id: {location, size}
         retval = {}
@@ -23,6 +29,7 @@ class GameBoard():
         for player in self.players:
             if player.id == id:
                 self.players.remove(player)
+                self.removed_players[player.id] = player
                 break
         return self.playersDict()
     

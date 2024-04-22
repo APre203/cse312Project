@@ -1,25 +1,20 @@
-import math
-import os
-import random
-import re
 import uuid
 from flask import Flask, render_template, request, redirect, send_file, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
 from flask_socketio import SocketIO, emit, send, join_room, leave_room
 import datetime
 from util.auth import *
 from util.db import *
-import html
-from flask_sock import Sock
-import time
 import json
 from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
 from util.player import Player 
-from werkzeug.utils import secure_filename 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-socketio = SocketIO(app, cors_allowed_origins="*")
+ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
+
+
+socketio = SocketIO(app, cors_allowed_origins="*", transports=['websocket'])
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
@@ -49,6 +44,8 @@ def handle_disconnect():
     gameBoard.removePlayer(username)
     gameState = gameBoard.playersDict()
     socketio.emit('new-gamestate',gameState)
+    # if len(gameBoard.players) == 0:
+    #     gameBoard = GameBoard()
     print("User Disconnect -- ", username)
 
 @socketio.on("request-game-state")
@@ -60,7 +57,7 @@ def handle_request_state():
 def handle_update_game_state(userUpdate):
     try:
         userUpdate = json.loads(userUpdate)
-        print("USER-Update -- ",userUpdate)
+        # print("USER-Update -- ",userUpdate)
         username = userUpdate["username"]["username"]
         player = gameBoard.findPlayer(username)
         if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
@@ -188,8 +185,10 @@ def login_or_create():
 def play_as_guest():
     flash('Playing as Guest!', 'info')
     username = getUsername(request)
-    response.set_cookie('auth_token', token, httponly=True, expires=datetime.datetime.now() + datetime.timedelta(hours=1))
-    return render_template('playPage.html', name="Guest", left=50, top=50)
+    response = make_response(render_template('playPage.html', name="Guest", left=50, top=50))
+    #response = make_response(redirect(url_for('dashboard')))
+    response.set_cookie('auth_token', "none", httponly=True, expires=0)
+    return response # render_template('playPage.html', name="Guest", left=50, top=50)
 
 
 
@@ -268,7 +267,7 @@ def handle_image_upload():
     username = getUsername(request)
     if username != "Guest":
         unique_name = str(uuid.uuid4())
-        path_of_image = app.config["UPLOAD_FOLDER"] + '/' + f'{unique_name}.jpg'
+        path_of_image = app.config["UPLOAD_FOLDER"] + f'{unique_name}.jpg'
         # print(path_of_image)
         # print(len(request.files.getlist("upload")))
         # print(request.files.get("upload", None).filename)
@@ -298,7 +297,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    app.run(host=host, port=port)
+    socketio.run(app, host=host, port=port,ssl_context=ssl_context, allow_unsafe_werkzeug=True)
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
