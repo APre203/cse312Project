@@ -39,7 +39,10 @@ function addChatMessage(messageJSON) {
   var messageText = document.createElement("span");
 
   var likeButton = document.createElement("button");
-
+  var img=document.createElement("img")
+  img.height="100px"
+  img.width="100px"
+  img.src=messageJSON.filename
   messageText.textContent = messageJSON.username + ": " + messageJSON.message;
 
   // console.log("Count",messageJSON.count)
@@ -76,7 +79,7 @@ function addChatMessage(messageJSON) {
     // console.log('Like button clicked for message:',messageJSON.message);
     // console.log('id:',messageJSON.id)
   });
-
+  messageElement.appendChild(img);
   messageElement.appendChild(messageText);
   messageElement.appendChild(likeButton);
   chatMessages.insertBefore(messageElement, chatMessages.firstChild);

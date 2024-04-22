@@ -235,7 +235,7 @@ def add_chat_message():
     if message:
         id = storeMessage(username, message)
         #chat_collection.insert_one({'username': username, 'message': message})
-        return jsonify({"username": username, "message": message,"id":id, "count":0}), 201
+        return jsonify({"username": username, "filename":id[1], "message": message,"id":id, "count":0}), 201
     else:
         return jsonify({'error': 'Username and message are required'}), 400
     
