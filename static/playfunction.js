@@ -112,10 +112,4 @@ function updateChat() {
       // Handle error
     });
 }
-async function goToSettings() {
-  const response = await fetch("game/settings", { method: "GET" });
-  if (response.ok) {
-    console.log("ok great seems to work");
-  }
-}
 setInterval(updateChat, 5000);
