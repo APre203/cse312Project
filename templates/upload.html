@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Upload an Image!</title>
+    <link rel="stylesheet" href="/static/uploadstyles.css" />
+  </head>
+  <body onload="fetchImageList()">
+    <h1>Welcome {{name}}!</h1>
+    <div class="upload-image-div">
+      {% with messages = get_flashed_messages() %} {% if messages %}
+      <div class="flashes">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+      </div>
+      {% endif %} {% endwith %}
+      <form
+        id="image-upload-form"
+        action="/upload-image"
+        method="POST"
+        enctype="multipart/form-data"
+      >
+        <label for="upload-img">Upload Image:</label>
+        <input id="upload-img" type="file" name="upload" />
+        <input type="submit" value="upload" />
+      </form>
+    </div>
+    <div id="imageList"></div>
+    <div id="imageDisplay"></div>
+    <form action="{{ url_for('dashboard') }}" method="GET">
+      <button type="submit" id="settings-button">Play</button>
+    </form>
+    <img src="{{filename}}" />
+    <script src="/static/upload.js"></script>
+  </body>
+</html>
