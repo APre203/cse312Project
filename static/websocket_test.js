@@ -1,4 +1,5 @@
-const socket = io.connect("wss://heapoverflow312.me", { transports: ['websocket'] });
+io.set('transports', ['websocket']);
+const socket = io.connect("wss://heapoverflow312.me", { transports: ['websocket'] , upgrade: false });
 // if (wss){
 //     io.connect("https://heapoverflow312.me")
 // }
