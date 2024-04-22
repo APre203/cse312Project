@@ -28,7 +28,7 @@ ssl_certificate /etc/letsencrypt/live/heapoverflow312.me/fullchain.pem; # manage
     include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
     '''
 
-socketio = SocketIO(app, cors_allowed_origins="*", ssl_context=ssl_context)
+socketio = SocketIO(app, cors_allowed_origins="*")
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
@@ -311,7 +311,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
+    socketio.run(app, host=host, port=port,ssl_context=ssl_context, allow_unsafe_werkzeug=True)
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
