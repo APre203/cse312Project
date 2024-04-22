@@ -272,7 +272,7 @@ def handle_image_upload():
     username = getUsername(request)
     if username != "Guest":
         unique_name = str(uuid.uuid4())
-        path_of_image = app.config["UPLOAD_FOLDER"] + '/' + f'{unique_name}.jpg'
+        path_of_image = app.config["UPLOAD_FOLDER"] + f'{unique_name}.jpg'
         # print(path_of_image)
         # print(len(request.files.getlist("upload")))
         # print(request.files.get("upload", None).filename)
