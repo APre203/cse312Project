@@ -1,4 +1,4 @@
-const socket = io.connect();
+const socket = io.connect("wss://heapoverflow312.me");
 // if (wss){
 //     io.connect("https://heapoverflow312.me")
 // }
