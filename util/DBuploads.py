@@ -21,6 +21,7 @@ def getImage(request:str):
     if 'auth_token' in request.cookies:
         username = find_user(request.cookies["auth_token"])
         image_filename = image_uploads.find({"username": username, "token": request.cookies["auth_token"]})
+        print(image_filename)
         list_of_all_images = []
         for image in image_filename:
             image.pop("_id")

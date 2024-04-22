@@ -1,21 +1,18 @@
-const socket = io();
-
+// const socket = io();
 async function initialize() {
     try {
         // Send request for game state
         // playerClear();
         socket.send("request-game-state", "get-game-state");
 
-        // Define a promise to handle the game state response
+        
         const gameStatePromise = new Promise((resolve, reject) => {
             // Set up an event listener for the 'new-gamestate' event
             socket.on('new-gamestate', function(data) {
-                console.log("Received game state from server:", data);
+                // console.log("Received game state from server:", data);
                 // Resolve the promise with the received game state data
                 addPlayerstoDOM(data);
-                console.log("adding listener");
                 addUserListener();
-                console.log("finished adding listener");
                 resolve(data);
                 
             });
@@ -23,30 +20,27 @@ async function initialize() {
         
         // Wait for the game state promise to resolve
         const gameStateData = await gameStatePromise;
-        console.log("Game state data received:", gameStateData);
+        // console.log("Game state data received:", gameStateData);
         
 
-
-        // Proceed with the rest of the initialization
-        // ...
     } catch (error) {
         console.error('Error initializing:', error);
     }
 }
 
-// Call the initialize function to start the initialization process
 initialize();
+
+// initialize();
 
 // handleInit();
 // socket.on('init', handleInit);
 
 socket.on('new-gamestate', function(data){ // NEW GAMESTATE
-    console.log("Data From Server: ", data);
+    // console.log("Data From Server: ", data);
     playerClear();
     addPlayerstoDOM(data);
-    console.log("adding listener");
     addUserListener();
-    console.log("finished adding listener");
+   
 });
 
 function addPlayerstoDOM(gameStateData){
@@ -79,7 +73,7 @@ function addPlayer(player, playerDict){
     Array.from(playerArea).forEach(pA => {
         // console.log("NEWPLAYERAREA",pA.innerHTML);
         const existingPlayer = pA.querySelector("#" + player); // Check if a player with the same id already exists
-        console.log("ExistingPlayer",existingPlayer);
+        // console.log("ExistingPlayer",existingPlayer);
         if (existingPlayer) {
             // Player already exists, update specific values
             existingPlayer.style.left = playerDict["location"][1];
@@ -93,10 +87,11 @@ function addPlayer(player, playerDict){
 }
 
 function addUserListener(){
-    document.addEventListener('keydown', function(e) {
+    const player = document.getElementById(username);
+    if (player != null){
+        function handleKeyDown(e){
             const gameArea = document.querySelector('.game-area');
-            const player = document.getElementById(username);
-            console.log("PLAYER",player)
+            
             const playerRect = player.getBoundingClientRect();
             let playerCenterX = playerRect.left + playerRect.width / 2;
             let playerCenterY = playerRect.top + playerRect.height / 2;
@@ -149,6 +144,12 @@ function addUserListener(){
             
             player.style.left = playerCenterX - playerRect.width / 2 + 'px';
             player.style.top = playerCenterY - playerRect.height / 2 + 'px';
-            socket.send("update-game-state",{username: {"location":[player.style.top,player.style.left], "width":10}})
-        });
+            if (parseInt(player.style.top) != 0 || parseInt(player.style.left) != 0){                
+                socket.send("update-game-state",JSON.stringify({"username": {"username":username, "location":[parseInt(player.style.top),parseInt(player.style.left)], "width":10}}))
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown);
+    }
+        
 }
