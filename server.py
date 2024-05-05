@@ -8,7 +8,6 @@ import json
 from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
 from util.player import Player 
-from flask_ipban import IpBan
 import time
 
 app = Flask(__name__)
@@ -27,7 +26,7 @@ blocked_ips = {}
 # Middleware to check request rate and block IPs if necessary
 @app.before_request
 def limit_requests():
-    ip = request.remote_addr
+    ip = request.headers.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
 
     # Clean up request counts for IPs after 10 seconds
     clean_up_old_requests()
