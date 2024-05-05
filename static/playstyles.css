@@ -33,6 +33,7 @@ body, html {
     width: 300px;
     background-color: #fff; 
     border-left: 2px solid #ccc; 
+    opacity: 75%;
 }
 
 .chat-form {
@@ -42,9 +43,12 @@ body, html {
 }
 
 .player-area div {
-position: absolute;
-width: 20px;
-height: 20px;
-background-color: red;
-border-radius: 50%;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: red;
+    display: flex; /* Add flex display */
+    justify-content: center; /* Horizontally center the text */
+    align-items: center; /* Vertically center the text */
+    /* border-radius: 50%; */
 }

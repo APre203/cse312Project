@@ -48,3 +48,4 @@ class GameBoard():
     
     def clearGameboard(self):
         self.players = []
+        self.removed_players = {}

@@ -60,12 +60,13 @@ def handle_update_game_state(userUpdate):
         # print("USER-Update -- ",userUpdate)
         username = userUpdate["username"]["username"]
         player = gameBoard.findPlayer(username)
-        if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
-            player.top = userUpdate["username"]["location"][0]
-            player.left = userUpdate["username"]["location"][1]
-            
-            gameState = gameBoard.playersDict()
-            socketio.emit('new-gamestate',gameState)
+        if player:
+            if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
+                player.top = userUpdate["username"]["location"][0]
+                player.left = userUpdate["username"]["location"][1]
+                
+                gameState = gameBoard.playersDict()
+                socketio.emit('new-gamestate',gameState)
     except Exception as e:
         print(e)
         return

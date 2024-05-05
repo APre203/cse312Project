@@ -3,12 +3,12 @@ class Player():
     def __init__(self, id:str, top:int=None, left:int=None, width:int=10, color=None ):
         self.id = id
         if top is None:
-            self.top = random.randint(30,70)
+            self.top = random.randint(300,400)
         else:
             self.top = top
 
         if left is None:
-            self.left = random.randint(30,70)
+            self.left = random.randint(300,600)
         else:
             self.left = left
         self.width = width
