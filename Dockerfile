@@ -10,7 +10,9 @@ RUN pip install -r requirements.txt
 
 EXPOSE 8080
 
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait /wait
+RUN apt-get update && apt-get install -y curl \
+    && curl -L https://github.com/ufoscout/docker-compose-wait/releases/download/2.2.1/wait -o /wait \
+    && chmod +x /wait
 
 RUN chmod +x /wait
 
