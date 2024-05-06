@@ -34,7 +34,7 @@ class GameBoard():
         new_leaders = sorted(retval["leaders"], key=lambda x: x[1])
         new_leaders.reverse()
         retval["leaders"] = new_leaders
-        print("retval",retval)
+        # print("retval",retval)
         return retval
 
     def gameState(self):
