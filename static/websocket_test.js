@@ -1,5 +1,5 @@
 wss = false
-const socket = io();
+const socket = io.connect("http://" + document.domain + ":" + location.port);
 if (wss){
     io.set('transports', ['websocket']);
     socket = io.connect("wss://heapoverflow312.me", { transports: ['websocket'] , upgrade: false });
