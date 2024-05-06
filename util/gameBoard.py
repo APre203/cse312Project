@@ -38,6 +38,9 @@ class GameBoard():
         return retval
 
     def gameState(self):
+        if len(self.balls) == 0:
+            # print("creating balls")
+            self.createBalls(50)
         players = self.playersDict()
         balls = self.ballDict()
         leaders = self.leadersDict()
@@ -83,6 +86,7 @@ class GameBoard():
             if abs_left <= 2 and abs_top <= 2:
                 self.balls.remove(ball)
                 return self.ballDict()
+        
         return self.ballDict()
 
     def ballDict(self):
