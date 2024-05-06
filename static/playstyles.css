@@ -85,7 +85,7 @@ body, html {
     z-index: 1;
 }
 
-#timer-container{
+/* #timer-container{
     position: absolute;
     opacity: 75%;
     z-index: 3;
@@ -103,4 +103,4 @@ body, html {
 #winner-message{
     opacity: 75%;
     z-index: 3;
-}
+} */
