@@ -52,7 +52,6 @@ def limit_requests():
         blocked_ips[ip] = time.time() + 30
         ip_request_count[ip] = []
         return jsonify({"error": "Too many requests. Please try again later."}), 429
-    print(ip, len(ip_request_count[ip]))
 
 def clean_up_old_requests():
     # Iterate through the IP request counts and remove old requests
@@ -91,7 +90,7 @@ def handle_connection():
     # gameState = gameBoard.gameState()
     gameState = gameBoard.playersDict()
     socketio.emit('new-gamestate',gameState)
-    print("User Connected -- ",username,  "-- Socket: ", socket, "IN HERE")
+    print("User Connected -- ",username,  "-- Socket: ", socket)
 
 @socketio.on("disconnect")
 def handle_disconnect():
