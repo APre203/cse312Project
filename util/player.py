@@ -30,3 +30,6 @@ class Player():
         if width:
             self.width = width
         return self.__toDict__()
+    
+    def restartScore(self):
+        self.score = 0

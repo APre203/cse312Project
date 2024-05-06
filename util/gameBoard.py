@@ -99,3 +99,12 @@ class GameBoard():
         self.players = []
         self.removed_players = {}
         self.balls = []
+
+    def restartGameboard(self):
+        self.balls = []
+        self.createBalls(100)
+        for p in self.players:
+            p.restartScore()
+        for p in self.removed_players.values():
+            p.restartScore()
+        return self.gameState()
