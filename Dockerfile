@@ -1,8 +1,6 @@
 FROM python:3.8.2
 
-ENV FLASK_APP=app \
-    HOME=/root \
-    FLASK_RUN_HOST=0.0.0.0
+ENV HOME /root
 
 WORKDIR /root
 

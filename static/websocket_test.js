@@ -1,6 +1,5 @@
 wss = false
-//const socket = io.connect("https://" + document.domain + ":" + location.port, {path:'/socket',transports: ['websocket']},);
-const socket = io();
+let socket = io();
 if (wss){
     io.set('transports', ['websocket']);
     socket = io.connect("wss://heapoverflow312.me", { transports: ['websocket'] , upgrade: false });
@@ -22,8 +21,8 @@ async function initialize() {
                 // console.log("Received game state from server:", data);
                 // Resolve the promise with the received game state data
                 addPlayerstoDOM(data);
+                // addUserListener();
                 resolve(data);
-                // addUserListener()
                 
             });
         });
@@ -56,9 +55,9 @@ socket.on('new-gamestate', function(data){ // NEW GAMESTATE
 function addPlayerstoDOM(gameStateData){
     for (let key in gameStateData) {
         // console.log(key, userData[key]);
-        if (key != "null"){
+        // if (key != username){
             addPlayer(key, gameStateData[key]);
-        }
+        // }
     }
 }
 
@@ -86,14 +85,8 @@ function addPlayer(player, playerDict){
         // console.log("ExistingPlayer",existingPlayer);
         if (existingPlayer) {
             // Player already exists, update specific values
-            
-            if (player != username && existingPlayer.style.left != playerDict["location"][1] && existingPlayer.style.top != playerDict["location"][0] ){
-                console.log("changing position", player)
-                existingPlayer.style.left = playerDict["location"][1];
-                existingPlayer.style.top = playerDict["location"][0];
-                // notcheckedPlayer[player] = false
-            }
-        
+            existingPlayer.style.left = playerDict["location"][1];
+            existingPlayer.style.top = playerDict["location"][0];
             
         } else {
             // Player doesn't exist, add new player HTML
@@ -182,70 +175,4 @@ function sendUserDataThrottled() {
     // Set a new timeout to send the user data after 250ms
     sendUserDataTimeout = setTimeout(sendUserData, 100);
 }
-
-function updatePlayerLocationMOUSE() { // mouse movement
-    function movePlayerTowardsMouse(mouseX, mouseY) {
-
-        const player = document.getElementById(username);
-        if (player != null) {
-            console.log("here")
-            const playerRect = player.getBoundingClientRect();
-            const playerLeft = playerRect.left;
-            const playerTop = playerRect.top;
-
-            const baseSpeed = 5; // Base speed
-            const speedMultiplier = 1; // Speed multiplier
-
-            // Calculate the direction towards the mouse cursor
-            const dx = mouseX - (playerLeft + playerRect.width / 2);
-            const dy = mouseY - (playerTop + playerRect.height / 2);
-
-            // Calculate the magnitude (distance) between the player and mouse cursor
-            const distance = Math.sqrt(dx * dx + dy * dy);
-
-            // Normalize the direction vector
-            const normalizedDx = dx / distance;
-            const normalizedDy = dy / distance;
-
-            // Calculate the movement distance based on the speed
-            const movementX = normalizedDx * baseSpeed * speedMultiplier;
-            const movementY = normalizedDy * baseSpeed * speedMultiplier;
-
-            // Calculate the new player position
-            let newPlayerLeft = playerLeft + movementX;
-            let newPlayerTop = playerTop + movementY;
-
-            // Ensure the player stays within certain bounds
-            const minX = 10;
-            const minY = 10;
-            const maxX = window.innerWidth - playerRect.width - 10;
-            const maxY = window.innerHeight - playerRect.height - 10;
-
-            newPlayerLeft = Math.max(minX, Math.min(newPlayerLeft, maxX));
-            newPlayerTop = Math.max(minY, Math.min(newPlayerTop, maxY));
-
-            // Set the new player position
-            player.style.left = newPlayerLeft + 'px';
-            player.style.top = newPlayerTop + 'px';
-            }
-        }
-        // Add mousemove event listener to the document
-        document.addEventListener('mousemove', function(e) {
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-
-            let dx = mouseX;
-            let dy = mouseY;
-
-            // Move the player
-            movePlayerTowardsMouse(dx, dy);
-            sendUserDataThrottled();
-        });
-    
-}
-
-// Call the function to start updating player location
 updatePlayerLocation();
-
-
-// setInterval(sendUserData, 250)

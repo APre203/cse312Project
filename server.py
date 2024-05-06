@@ -1,6 +1,6 @@
 import uuid
 from flask import Flask, render_template, request, redirect, send_file, url_for, flash, get_flashed_messages, make_response, send_from_directory, jsonify, abort
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, emit, send, join_room, leave_room
 import datetime
 from util.auth import *
 from util.db import *
@@ -8,68 +8,13 @@ import json
 from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
 from util.player import Player 
-import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
-socket_server = SocketIO(app)
-socketio = SocketIO(app)#, cors_allowed_origins="*")#, transports=['websocket'])
-# ip_ban = IpBan(ban_seconds=30, ban_count=10)
-# ip_ban.init_app(app)
-
-# # Dictionary to store IP addresses and their request counts
-# ip_request_count = {}
-
-# # Dictionary to store blocked IP addresses and their unblock time
-# blocked_ips = {}
-
-# # Middleware to check request rate and block IPs if necessary
-# @app.before_request
-# def limit_requests():
-#     ip = request.headers.get('HTTP_X_FORWARDED_FOR', request.remote_addr)
-
-#     # Clean up request counts for IPs after 10 seconds
-#     clean_up_old_requests()
-
-#     # Check if IP is blocked
-#     if ip in blocked_ips:
-#         # Check if blocked time has passed
-#         if time.time() > blocked_ips[ip]:
-#             # Unblock IP
-#             del blocked_ips[ip]
-#         else:
-#             # Respond with 429 Too Many Requests
-#             return jsonify({"error": "Too many requests. Please try again later."}), 429
-
-#     # Increment request count for the IP
-#     # print("Before:",ip_request_count.get(ip, []), time.time())
-#     lst = ip_request_count.get(ip, [])
-#     lst.append(time.time())
-#     ip_request_count[ip] = lst
-#     # Check if request count exceeds limit
-#     if len(ip_request_count[ip]) > 50:
-#         # Block IP for 30 seconds
-#         blocked_ips[ip] = time.time() + 30
-#         ip_request_count[ip] = []
-#         return jsonify({"error": "Too many requests. Please try again later."}), 429
-
-# def clean_up_old_requests():
-#     # Iterate through the IP request counts and remove old requests
-#     current_time = time.time()
-#     for ips in list(ip_request_count.keys()):
-#         start = None
-#         for index, timestamp in enumerate(ip_request_count[ips]):
-#             if current_time - timestamp > 10:
-#                 start = index
-#             else:
-#                 break
-#         if start != None:
-#             ip_request_count[ips] = ip_request_count[ips][start:]
-            
 
 
-
+socketio = SocketIO(app, cors_allowed_origins="*")#, transports=['websocket'])
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
@@ -115,13 +60,12 @@ def handle_update_game_state(userUpdate):
         # print("USER-Update -- ",userUpdate)
         username = userUpdate["username"]["username"]
         player = gameBoard.findPlayer(username)
-        if player:
-            if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
-                player.top = userUpdate["username"]["location"][0]
-                player.left = userUpdate["username"]["location"][1]
-                
-                gameState = gameBoard.playersDict()
-                socketio.emit('new-gamestate',gameState)
+        if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
+            player.top = userUpdate["username"]["location"][0]
+            player.left = userUpdate["username"]["location"][1]
+            
+            gameState = gameBoard.playersDict()
+            socketio.emit('new-gamestate',gameState)
     except Exception as e:
         print(e)
         return
@@ -358,7 +302,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    socket_server.run(app, host=host, port=port, allow_unsafe_werkzeug=True)#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
+    socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":

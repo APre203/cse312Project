@@ -14,22 +14,19 @@
     />
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script> -->
-    <!-- <script
+    <script
       src="https://cdn.socket.io/4.7.5/socket.io.min.js"
       integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO"
       crossorigin="anonymous"
-    ></script> -->
-    <!-- <script
+    ></script>
+    <script
       src="https://code.jquery.com/jquery-3.7.1.min.js"
       integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
       crossorigin="anonymous"
-    ></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script> -->
+    ></script>
     <title>Play Page</title>
   </head>
   <body onload="updateChat();">
-    <!-- <script type="text/javascript" src="//code.jquery.com/jquery-1.4.2.min.js"></script>
-    <script type="text/javascript" src="//cdn.socket.io/4.4.1/socket.io.min.js"></script> -->
     <div class="container">
       <div class="game-area">
         <!-- Game boundary goes here -->
@@ -52,12 +49,15 @@
         <div class="leaderboard">
           <!-- Leaderboard content goes here -->
           leaderboard
-          <!-- This will be dynamically created and changed no need to do anything here -->
-          <div class="user-leaderboard"></div>
+          <!-- 
+                    This will be dynamically created and changed no need to do anything here
+
+                 -->
         </div>
       </div>
       <div class="sidebar" id="sidebar">
         <!-- Sidebar content (comments, chat, etc.) goes here -->
+        sidebar
         <div id="chat-messages"></div>
         <!-- 
                 Users would be able to interact with each other by typing
@@ -79,12 +79,8 @@
       </div>
     </div>
     <script>
-      const username = "{{ name }}";
-  
+      const username = "{{ name }}";      
     </script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.min.js"></script>
-    <script defer="" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> -->
-    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='websocket_test.js') }}"></script>
     <script src="{{ url_for('static', filename='playfunction.js') }}"></script>
     <!-- <script src="{{ url_for('static', filename='websocketclient.js') }}"></script> -->
