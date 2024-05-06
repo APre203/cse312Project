@@ -85,12 +85,12 @@ body, html {
     z-index: 1;
 }
 
-/* #timer-container{
+#timer-container{
     position: absolute;
-    opacity: 75%;
+    opacity: 85%;
     z-index: 3;
 }
-
+/*
 #start-timer-btn{
     opacity: 75%;
     z-index: 3;
