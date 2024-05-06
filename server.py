@@ -357,7 +357,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    socketio.run(app, host=host, port=port,allow_unsafe_werkzeug=True, cors_allowed_origins="*")#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
+    socketio.run(app, host=host, port=port,allow_unsafe_werkzeug=True)#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
