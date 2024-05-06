@@ -13,7 +13,8 @@ import time
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
-
+socket_server = SocketIO(app)
+socketio = SocketIO(app)#, cors_allowed_origins="*")#, transports=['websocket'])
 # ip_ban = IpBan(ban_seconds=30, ban_count=10)
 # ip_ban.init_app(app)
 
@@ -68,7 +69,7 @@ def clean_up_old_requests():
             
 
 
-socketio = SocketIO(app, cors_allowed_origins="*")#, transports=['websocket'])
+
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
@@ -357,7 +358,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    socketio.run(app, host=host, port=port,allow_unsafe_werkzeug=True)#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
+    socket_server.run(app, host=host, port=port)#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
