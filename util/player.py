@@ -1,7 +1,8 @@
 import random
 class Player():
-    def __init__(self, id:str, top:int=None, left:int=None, width:int=10, color=None ):
+    def __init__(self, id:str, top:int=None, left:int=None, width:int=10, color=None, score=0 ):
         self.id = id
+        self.score = score
         if top is None:
             self.top = random.randint(300,400)
         else:
@@ -22,6 +23,9 @@ class Player():
         self.left = left
         return self.__toDict__()
     
+    def updateScore(self, n):
+        self.score += n
+
     def updateSize(self, width:int=None):
         if width:
             self.width = width

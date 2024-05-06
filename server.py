@@ -18,7 +18,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")#, transports=['websocket'])
 # sock = Sock(app)
 app.config['UPLOAD_FOLDER'] = 'static/images'
 
-gameBoard = GameBoard()
+gameBoard = GameBoard(100)
 
 def getUsername(request):
     username = "Guest"
@@ -34,7 +34,8 @@ def handle_connection():
     if username != "Guest":
         gameBoard.addPlayer(Player(username))
     # gameState = gameBoard.gameState()
-    gameState = gameBoard.playersDict()
+    gameState = gameBoard.gameState()
+    # print("Actual GameState",gameBoard.gameState())
     socketio.emit('new-gamestate',gameState)
     print("User Connected -- ",username,  "-- Socket: ", socket)
 
@@ -42,7 +43,9 @@ def handle_connection():
 def handle_disconnect():
     username = getUsername(request)
     gameBoard.removePlayer(username)
-    gameState = gameBoard.playersDict()
+    gameState = gameBoard.gameState()
+    # print("Actual GameState",gameBoard.gameState())
+
     socketio.emit('new-gamestate',gameState)
     # if len(gameBoard.players) == 0:
     #     gameBoard = GameBoard()
@@ -50,7 +53,9 @@ def handle_disconnect():
 
 @socketio.on("request-game-state")
 def handle_request_state():
-    gameState = gameBoard.playersDict()
+    gameState = gameBoard.gameState()
+    # print("Actual GameState",gameBoard.gameState())
+
     socketio.emit('new-gamestate',gameState)
 
 @socketio.on("handle_update_game_state")
@@ -60,11 +65,18 @@ def handle_update_game_state(userUpdate):
         # print("USER-Update -- ",userUpdate)
         username = userUpdate["username"]["username"]
         player = gameBoard.findPlayer(username)
-        if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0:
+        if userUpdate["username"]["location"][0] != 0 or userUpdate["username"]["location"][1] != 0 or userUpdate["username"]["score"] != 0:
             player.top = userUpdate["username"]["location"][0]
             player.left = userUpdate["username"]["location"][1]
-            
-            gameState = gameBoard.playersDict()
+            player.updateScore(userUpdate["username"]["score"])
+
+            if len(userUpdate["balls"]) > 0:
+                for balls in userUpdate["balls"]:
+                    gameBoard.removeBall(top=balls[0], left=balls[1])
+
+            gameState = gameBoard.gameState()
+            # print("Actual GameState",gameBoard.gameState())
+
             socketio.emit('new-gamestate',gameState)
     except Exception as e:
         print(e)
@@ -80,35 +92,6 @@ def handle_message(message, b):
         handle_update_game_state(b)
     # print("Message: ", message)
     # {"username":username, username: {"location":[player.style.top,player.style.left], "width":10}}
-
-
-# @sock.route('/gamews')
-# def test_ws(socket):
-#     username = getUsername(request)
-#     if username != "Guest":
-#         gameBoard.addPlayer(Player(socket, username, 50, 50, 10))
-#     while True:
-#         raw_data = socket.receive(timeout=0)
-#         try:
-#             send_data = gameBoard.playersDict()
-#             data_to_send = {"id":username, "server_data":send_data}
-            
-#             send_data = json.dumps(data_to_send)
-#             socket.send(send_data)
-#             # for s in sockets:
-#             #     print()
-#             #     s.send(send_data)
-
-#             # print("RAW DATA: ", raw_data)
-#             # print("DATA", json.loads(raw_data))
-            
-#         except Exception as e:
-#             print("EXCEPTION:",e)
-#             pass
-        
-#         time.sleep(5)
-
-
 
 @app.after_request
 def add_header(response):

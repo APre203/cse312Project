@@ -24,6 +24,7 @@ body, html {
     border: 1px solid #ccc; 
     padding: 10px; 
     opacity: 75%;
+    z-index: 3;
     
 }
 
@@ -35,21 +36,51 @@ body, html {
     background-color: #fff; 
     border-left: 2px solid #ccc; 
     opacity: 75%;
+    z-index: 3;
 }
 
 .chat-form {
     margin-top: auto; 
     padding: 10px; 
-    border-top: 1px solid #ccc; 
+    border-top: 1px solid #ccc;
+    z-index: 3;
 }
 
 .player-area div {
     position: absolute;
     width: 40px;
     height: 40px;
-    background-color: red;
+    /* background-color: red; */
     display: flex; /* Add flex display */
     justify-content: center; /* Horizontally center the text */
     align-items: center; /* Vertically center the text */
     /* border-radius: 50%; */
+}
+
+.players {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-color: red;
+    display: flex; /* Add flex display */
+    justify-content: center; /* Horizontally center the text */
+    align-items: center;
+    z-index: 2;
+}
+
+.balls-location div {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    /* background-color: red; */
+    display: flex; /* Add flex display */
+    justify-content: center; /* Horizontally center the text */
+    align-items: center; /* Vertically center the text */
+    /* border-radius: 50%; */
+}
+
+.balls {
+    border-radius: 50%;
+    background-color: aquamarine;
+    z-index: 1;
 }
