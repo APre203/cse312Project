@@ -7,12 +7,16 @@ from util.db import *
 import json
 from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
-from util.player import Player 
+from util.player import Player
+import threading
+import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
 
+timer_duration = 30
+start_time = None
 
 socketio = SocketIO(app, cors_allowed_origins="*")#, transports=['websocket'])
 # sock = Sock(app)
@@ -92,6 +96,37 @@ def handle_message(message, b):
         handle_update_game_state(b)
     # print("Message: ", message)
     # {"username":username, username: {"location":[player.style.top,player.style.left], "width":10}}
+
+@socketio.on('start_timer')
+def start_timer():
+    print("\n\nTEST\n\n")
+    gamestate = gameBoard.restartGameboard()
+    socketio.emit('new-gamestate', gamestate)
+    global start_time
+    print("THIS", start_time)
+    if start_time is None:
+        start_time = time.time()
+        print(start_time)
+        countdown_thread = threading.Thread(target=countdown_timer)
+        countdown_thread.start()
+        socketio.emit('timer_started')
+
+def countdown_timer():
+    global start_time
+    
+    print("test2")
+    while time.time() - start_time < timer_duration:
+        print(timer_duration, time.time() - start_time)
+        print("test3")
+        remaining_time = int(timer_duration - (time.time() - start_time))
+        socketio.emit('update_timer', {'time': remaining_time})
+        time.sleep(1)
+    old_state = gameBoard.gameState()
+    board = gameBoard.restartGameboard()
+
+    socketio.emit('timer_end', [board, old_state])
+    start_time = None
+    #return redirect(url_for('dashboard'))
 
 @app.after_request
 def add_header(response):

@@ -1,4 +1,5 @@
 wss = false
+let timerStarted = false;
 let socket = io();
 if (wss){
     io.set('transports', ['websocket']);
@@ -51,6 +52,28 @@ initialize();
 // handleInit();
 // socket.on('init', handleInit);
 
+socket.on('timer_started', function() {
+    startTimer();
+});
+
+function startTimer() {
+    if (!timerStarted) {
+        
+        socket.emit('start_timer');
+        document.getElementById('start-timer-btn').style.display = 'none';
+        document.getElementById('timer').style.display = 'block';
+        timerStarted = true;
+    }
+  }
+
+socket.on('update_timer', function(data) {
+    // Extract the time remaining from the data received
+    const timeRemaining = data.time;
+
+    // Update the HTML element displaying the timer with the new time
+    document.getElementById('time').textContent = timeRemaining + ' seconds';
+});
+
 socket.on('new-gamestate', function(data){ // NEW GAMESTATE
     // console.log("Data From Server: ", data);
     const players = data.players;
@@ -67,6 +90,40 @@ socket.on('new-gamestate', function(data){ // NEW GAMESTATE
     // addUserListener();
    
 });
+
+socket.on('timer_end', function([data, old_state]){ 
+    const players = data.players;
+    const balls = data.balls;
+    const leaders = data.leaders;
+    timerStarted = false;
+    document.getElementById('start-timer-btn').style.display = 'block';
+    document.getElementById('timer').style.display = 'none';
+    const maxscore = findMaxScoreUser(old_state.leaders);
+    console.log(maxscore)
+    document.getElementById('winner-message').textContent = "Previous winner: " + maxscore[0] + ' with ' + maxscore[1];
+    document.getElementById('winner-message').style.display = 'block';
+    playerClear();
+    //ballsClear();
+    //leaderClear();
+    addPlayerstoDOM(players);
+    //addBallstoDOM(balls);
+    //addLeaderstoDOM(leaders);
+    console.log("game reset")   
+});
+
+function findMaxScoreUser(userScores) {
+    let maxScore = -Infinity;
+    let maxScoreUser = null;
+
+    for (let [username, score] of userScores) {
+        if (score > maxScore) {
+            maxScore = score;
+            maxScoreUser = username;
+        }
+    }
+
+    return [maxScoreUser, maxScore];
+}
 
 function addPlayerstoDOM(gameStateData){
     for (let key in gameStateData) {
