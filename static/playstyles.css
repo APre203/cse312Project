@@ -84,3 +84,8 @@ body, html {
     background-color: aquamarine;
     z-index: 1;
 }
+
+#timer-container{
+    opacity: 75%;
+    z-index: 3;
+}
