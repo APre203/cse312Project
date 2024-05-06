@@ -8,11 +8,15 @@ import json
 from util.DBuploads import getImage, storeImage
 from util.gameBoard import GameBoard
 from util.player import Player 
+import threading
+import time
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 ssl_context = ('/etc/letsencrypt/live/heapoverflow312.me/fullchain.pem', '/etc/letsencrypt/live/heapoverflow312.me/privkey.pem')
 
+timer_duration = 60
+start_time = None
 
 socketio = SocketIO(app, cors_allowed_origins="*")#, transports=['websocket'])
 # sock = Sock(app)
@@ -108,7 +112,27 @@ def handle_message(message, b):
         
 #         time.sleep(5)
 
+@socketio.on('start_timer')
+def start_timer():
+    print("\n\nTEST\n\n")
+    global start_time
+    if start_time is None:
+        start_time = time.time()
+        print(start_time)
+        countdown_thread = threading.Thread(target=countdown_timer)
+        countdown_thread.start()
+        socketio.emit('timer_started')
 
+def countdown_timer():
+    global start_time
+    print("test2")
+    while time.time() - start_time < timer_duration:
+        print("test3")
+        remaining_time = int(timer_duration - (time.time() - start_time))
+        socketio.emit('update_timer', {'time': remaining_time})
+        time.sleep(1)
+    socketio.emit('timer_end')
+    start_time = None
 
 @app.after_request
 def add_header(response):

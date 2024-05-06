@@ -1,4 +1,5 @@
 wss = false
+let timerStarted = false
 let socket = io();
 if (wss){
     io.set('transports', ['websocket']);
@@ -50,6 +51,27 @@ socket.on('new-gamestate', function(data){ // NEW GAMESTATE
     addPlayerstoDOM(data);
     // addUserListener();
    
+});
+
+socket.on('timer_started', function() {
+    startTimer();
+});
+
+function startTimer() {
+    if (!timerStarted) {
+        socket.emit('start_timer');
+        document.getElementById('start-timer-btn').style.display = 'none';
+        document.getElementById('timer').style.display = 'block';
+        timerStarted = true;
+    }
+  }
+
+socket.on('update_timer', function(data) {
+    // Extract the time remaining from the data received
+    const timeRemaining = data.time;
+
+    // Update the HTML element displaying the timer with the new time
+    document.getElementById('time').textContent = timeRemaining + ' seconds';
 });
 
 function addPlayerstoDOM(gameStateData){
