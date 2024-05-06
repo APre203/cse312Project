@@ -1,6 +1,6 @@
 flask
 pymongo
-flask_socketio==5.2.0
+flask_socketio
 flask_sock
 flask_wtf
 wtforms

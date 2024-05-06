@@ -358,7 +358,7 @@ def main():
 
     print("Listening on port " + str(port))
     
-    socket_server.run(app, host=host, port=port)#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
+    socket_server.run(app, host=host, port=port, allow_unsafe_werkzeug=True)#allow_unsafe_werkzeug=True) #ssl_context=ssl_context,
     # socketio.run(app, host=host, port=port, allow_unsafe_werkzeug=True)
 
 if __name__ == "__main__":
