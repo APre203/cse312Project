@@ -89,3 +89,17 @@ body, html {
     opacity: 75%;
     z-index: 3;
 }
+
+#start-timer-btn{
+    opacity: 75%;
+    z-index: 3;
+}
+#timer{
+    opacity: 75%;
+    z-index: 3;
+}
+
+#winner-message{
+    opacity: 75%;
+    z-index: 3;
+}
