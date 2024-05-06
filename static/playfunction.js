@@ -31,6 +31,52 @@ function sendChat() {
   }
 }
 
+
+function playSound() {
+  var audio = document.getElementById("game-music");
+
+  // if audio element doesn't exist create one
+  if (!audio) {
+      audio = document.createElement("audio");
+      audio.id = "game-music";
+      audio.src = "/static/gamemusic/gamemusic.mp3"; 
+      audio.type = "audio/mpeg";
+      audio.controls = "controls";
+      document.body.appendChild(audio); 
+  }
+  audio.addEventListener('ended', function() {
+    audio.currentTime = 0; // Reset audio to beginning
+    audio.play(); 
+  });
+  // Checking if audio is paused or not
+  if (audio.paused) {
+      audio.play(); 
+  } else {
+      audio.pause(); 
+  }
+}
+
+// function playSound() {
+//   var audio = new Audio('/public/gamemusic/gamemusic.mp3');
+//   var playButton = document.getElementById('play-sound-button');
+
+//   // Listen for the "ended" event to loop the audio
+//   audio.addEventListener('ended', function() {
+//       audio.currentTime = 0; // Reset audio to beginning
+//       audio.play(); // Play the audio again
+//   });
+
+//   if (audio.paused) {
+//       // Play the audio
+//       audio.play();
+//       playButton.textContent = 'Stop Sound';
+//   } else {
+//       // Pause the audio
+//       audio.pause();
+//       audio.currentTime = 0; // Reset audio to beginning
+//       playButton.textContent = 'Play Sound';
+//   }
+// }
 function addChatMessage(messageJSON) {
   // console.log("AddChat", messageJSON)
   var sidebar = document.getElementById("sidebar");
